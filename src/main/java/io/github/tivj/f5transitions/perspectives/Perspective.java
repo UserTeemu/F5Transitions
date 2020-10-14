@@ -1,7 +1,9 @@
 package io.github.tivj.f5transitions.perspectives;
 
+import io.github.tivj.f5transitions.TransitionPhase;
+
 public interface Perspective {
-    float getCameraYRotation();
+    float getCameraYRotation(TransitionPhase transitionPhase);
 
     /**
      * Calculates the distance multiplier

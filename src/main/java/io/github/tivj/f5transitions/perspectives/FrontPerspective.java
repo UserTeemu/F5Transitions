@@ -1,10 +1,11 @@
 package io.github.tivj.f5transitions.perspectives;
 
+import io.github.tivj.f5transitions.TransitionPhase;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 
 public class FrontPerspective implements Perspective {
     @Override
-    public float getCameraYRotation() {
+    public float getCameraYRotation(TransitionPhase transitionPhase) {
         return TransitionsConfig.rotateCameraToLeft ? -180F : 180F;
     }
 

@@ -10,6 +10,7 @@ public class TransitionsConfig {
     public static float maxPerpectiveTimer = 16F;
     public static float perspectiveTimerIncreaseValuePerTick = 1F; // amount that the perspective timer increases per tick
     public static boolean rotateCameraToLeft = true; // chooses the direction camera rotates to when going to front perspective, also affects transition away from it
+    public static boolean continuousRotation = true; // always rotate to the same direction
 
     public static IEase easingMethod = new EaseInOutQuad();
 }

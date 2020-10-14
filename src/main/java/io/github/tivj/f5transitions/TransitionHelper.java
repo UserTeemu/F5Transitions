@@ -10,6 +10,7 @@ import net.minecraft.client.renderer.EntityRenderer;
 
 import java.util.HashSet;
 
+import static io.github.tivj.f5transitions.TransitionPhase.FROM;
 import static io.github.tivj.f5transitions.utils.CalculationHelper.easeClamped;
 
 public class TransitionHelper {
@@ -20,14 +21,14 @@ public class TransitionHelper {
         perspectives.add(new FrontPerspective());
     }
 
-    private Minecraft mc;
-    private EntityRenderer entityRenderer;
-
     public Perspective from;
     public Perspective to;
     public float progress = 0F;
     public float progressOfMax = 0F;
     public boolean transitionActive = false;
+
+    private final Minecraft mc;
+    private final EntityRenderer entityRenderer;
 
     public TransitionHelper(EntityRenderer entityRenderer, Minecraft mc) {
         this.entityRenderer = entityRenderer;
@@ -93,8 +94,8 @@ public class TransitionHelper {
 
     @SuppressWarnings("unused") // used in asm
     public float getYRotationBonus(float partialTicks) {
-        if (from == null || !transitionActive) return to.getCameraYRotation();
-        else return from.getCameraYRotation() + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (to.getCameraYRotation() - from.getCameraYRotation()));
+        if (from == null || !transitionActive) return to.getCameraYRotation(TransitionPhase.NO_TRANSITION);
+        else return from.getCameraYRotation(FROM) + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
     }
 
     @SuppressWarnings("unused") // used in asm

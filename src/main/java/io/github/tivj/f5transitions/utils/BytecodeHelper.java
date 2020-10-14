@@ -7,6 +7,10 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+/**
+ * Intended for debugging use in UserTeemu's projects. Should not be used in production.
+ * @author UserTeemu
+ */
 public class BytecodeHelper {
     public static void printEmAll(InsnList instructions) {
         TransitionsMod.LOGGER.info("BytecodeDump:"+"------- Method dump start --------");

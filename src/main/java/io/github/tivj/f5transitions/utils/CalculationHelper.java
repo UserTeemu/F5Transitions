@@ -12,7 +12,7 @@ public class CalculationHelper {
         return ease(MathHelper.clamp_float(input, 0F, 1F));
     }
 
-    public static float smoothen(float previousValue, float partialTicks, float unsmoothenedValue) {
+    public static float smoothen(float previousValue, float unsmoothenedValue, float partialTicks) {
         return previousValue + (unsmoothenedValue - previousValue) * partialTicks;
     }
 }

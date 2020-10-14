@@ -1,10 +1,12 @@
 package io.github.tivj.f5transitions.perspectives;
 
+import io.github.tivj.f5transitions.TransitionPhase;
+
 import static io.github.tivj.f5transitions.utils.CalculationHelper.ease;
 
 public class BehindPlayerPerspective implements Perspective {
     @Override
-    public float getCameraYRotation() {
+    public float getCameraYRotation(TransitionPhase transitionPhase) {
         return 0F;
     }
 

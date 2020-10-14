@@ -1,14 +1,17 @@
 package io.github.tivj.f5transitions.perspectives;
 
 import club.sk1er.patcher.config.PatcherConfig;
+import io.github.tivj.f5transitions.TransitionPhase;
 import io.github.tivj.f5transitions.TransitionsMod;
+import io.github.tivj.f5transitions.config.TransitionsConfig;
 
 import static io.github.tivj.f5transitions.utils.CalculationHelper.ease;
 
 public class FirstPersonPerspective implements Perspective {
     @Override
-    public float getCameraYRotation() {
-        return 0F;
+    public float getCameraYRotation(TransitionPhase transitionPhase) {
+        if (TransitionsConfig.continuousRotation && transitionPhase == TransitionPhase.TO) return TransitionsConfig.rotateCameraToLeft ? -360F : 360F;
+        else return 0F;
     }
 
     @Override
