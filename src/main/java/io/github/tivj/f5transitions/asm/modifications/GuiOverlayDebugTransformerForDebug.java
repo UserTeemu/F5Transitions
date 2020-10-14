@@ -6,7 +6,7 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
-public class GuiOverlayDebugTransformer implements ITransformer {
+public class GuiOverlayDebugTransformerForDebug implements ITransformer {
     @Override
     public String[] getClassName() {
         return new String[]{"net.minecraft.client.gui.GuiOverlayDebug"};

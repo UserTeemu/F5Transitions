@@ -2,7 +2,6 @@ package io.github.tivj.f5transitions;
 
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,10 +18,5 @@ public class TransitionsMod {
 
     public TransitionsMod() {
         MinecraftForge.EVENT_BUS.register(this);
-    }
-
-    @Mod.EventHandler
-    public void init(FMLInitializationEvent event) {
-        DebuggingGateway.registerCommand();
     }
 }

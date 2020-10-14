@@ -24,7 +24,7 @@ public class ClassTransformer implements IClassTransformer {
         registerTransformer(new RenderGlobalTransformer());
         registerTransformer(new ItemRendererTransformer());
 
-        registerTransformer(new GuiOverlayDebugTransformer());
+        registerTransformer(new GuiOverlayDebugTransformerForDebug());
     }
 
     private void registerTransformer(ITransformer transformer) {

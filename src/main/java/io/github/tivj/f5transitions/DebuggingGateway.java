@@ -23,34 +23,4 @@ public class DebuggingGateway {
         lines.add("Perspective: " + Minecraft.getMinecraft().gameSettings.thirdPersonView);
         return lines;
     }
-
-    public static void registerCommand() {
-        ClientCommandHandler.instance.registerCommand(new DebugCommand());
-    }
-
-    public static class DebugCommand extends CommandBase {
-        public static float value = 0F;
-
-        @Override
-        public String getCommandName() {
-            return "f5debug";
-        }
-
-        @Override
-        public String getCommandUsage(ICommandSender sender) {
-            return "/f5debug <pog>";
-        }
-
-        @Override
-        public void processCommand(ICommandSender sender, String[] args) {
-            if (args.length > 1 && "set".equals(args[0])) value = Float.parseFloat(args[1]);
-            else if (args.length > 0) value += Float.parseFloat(args[0]);
-            else value++;
-        }
-
-        @Override
-        public int getRequiredPermissionLevel() {
-            return -1;
-        }
-    }
 }

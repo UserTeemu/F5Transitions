@@ -93,8 +93,8 @@ public class TransitionHelper {
 
     @SuppressWarnings("unused") // used in asm
     public float getYRotationBonus(float partialTicks) {
-        if (from == null || !transitionActive) return to.getCameraYRotation() + DebuggingGateway.DebugCommand.value;
-        else return from.getCameraYRotation() + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (to.getCameraYRotation() - from.getCameraYRotation())) + DebuggingGateway.DebugCommand.value;
+        if (from == null || !transitionActive) return to.getCameraYRotation();
+        else return from.getCameraYRotation() + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (to.getCameraYRotation() - from.getCameraYRotation()));
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -104,21 +104,9 @@ public class TransitionHelper {
     }
 
     @SuppressWarnings("unused") // used in asm
-    public int getLastPerspective() {
-        return this.from.getID();
-    }
-
-    @SuppressWarnings("unused") // used in asm
-    public float getProgress() {
-        return this.progressOfMax;
-    }
-
-    @SuppressWarnings("unused") // used in asm
     public boolean isTransitionActive() {
         return this.transitionActive;
     }
-
-    // code below was not rewritten
 
     @SuppressWarnings("unused") // used in asm
     public boolean shouldRenderCustomHead() {

@@ -4,23 +4,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class GeneralFunctions {
-    public static AbstractInsnNode getPerspectiveSwitchTimer() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getProgress", "()F", false);
-    }
-
-    /**
-     * Note: doesn't require an instance of TransitionHelper
-     */
-    public static AbstractInsnNode getMaxPerspectiveSwitchTimer() {
-        return new FieldInsnNode(Opcodes.GETSTATIC, "io/github/tivj/f5transitions/config/TransitionsConfig", "maxPerpectiveTimer", "F");
-    }
-
     public static AbstractInsnNode updatePerspectiveTransitions() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "updatePerspectiveTimer", "()V", false);
-    }
-
-    public static AbstractInsnNode getLastPerspective() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getLastPerspective", "()I", false);
     }
 
     public static AbstractInsnNode getCameraDistanceMultiplier() {
