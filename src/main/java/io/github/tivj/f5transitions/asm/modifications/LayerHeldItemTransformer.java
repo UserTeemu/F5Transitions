@@ -17,7 +17,7 @@ public class LayerHeldItemTransformer implements ITransformer {
     public void transform(ClassNode classNode, String name) {
         for (MethodNode methodNode : classNode.methods) {
             String methodName = mapMethodName(classNode, methodNode);
-            if (methodName.equals("doRenderLayer") || methodName.equals("TODO")) {
+            if (methodName.equals("doRenderLayer") || methodName.equals("func_177141_a")) {
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
@@ -34,8 +34,8 @@ public class LayerHeldItemTransformer implements ITransformer {
 
     private InsnList shouldHeldItemBeRenderedInThirdPerson(LabelNode ifNot) {
         InsnList list = new InsnList();
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "getMinecraft", "()Lnet/minecraft/client/Minecraft;", false));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "entityRenderer", "Lnet/minecraft/client/renderer/EntityRenderer;"));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
         list.add(GeneralFunctions.shouldHeldItemBeRenderedInThirdPerson());
         list.add(new JumpInsnNode(Opcodes.IFEQ, ifNot));

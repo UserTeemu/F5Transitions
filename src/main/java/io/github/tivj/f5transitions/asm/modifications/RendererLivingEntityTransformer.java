@@ -19,14 +19,14 @@ public class RendererLivingEntityTransformer implements ITransformer {
     public void transform(ClassNode classNode, String name) {
         for (MethodNode methodNode : classNode.methods) {
             String methodName = mapMethodName(classNode, methodNode);
-            if (methodName.equals("renderModel") || methodName.equals("TODO")) {
+            if (methodName.equals("renderModel") || methodName.equals("func_77036_a")) {
                 int phase = 0;
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (phase == 0 && node.getOpcode() == Opcodes.IFEQ && node.getPrevious().getOpcode() == Opcodes.ILOAD && ((VarInsnNode) node.getPrevious()).var == 9 && node.getNext().getNext().getNext().getOpcode() == Opcodes.INVOKESTATIC && node.getNext() instanceof LabelNode) { // also trigger the if statement (that makes the player opaque) if an entity is the player
                         String invokeName = mapMethodNameFromNode(node.getNext().getNext().getNext());
-                        if (invokeName.equals("pushMatrix") || invokeName.equals("todo")) {
+                        if (invokeName.equals("pushMatrix") || invokeName.equals("func_179094_E")) {
                             LabelNode beginningLabel = (LabelNode) node.getNext();
                             methodNode.instructions.insertBefore(node, new JumpInsnNode(Opcodes.IFNE, beginningLabel));
                             methodNode.instructions.insertBefore(node, isEntityPlayer());
@@ -40,7 +40,7 @@ public class RendererLivingEntityTransformer implements ITransformer {
 
                     } else if (phase == 2 && node.getOpcode() == Opcodes.INVOKESTATIC && node.getPrevious().getOpcode() == Opcodes.ICONST_0 && node.getNext() instanceof LabelNode) {// disable depth mask if needed
                         String invokeName = mapMethodNameFromNode(node);
-                        if (invokeName.equals("depthMask") || invokeName.equals("todo")) {
+                        if (invokeName.equals("depthMask") || invokeName.equals("func_179132_a")) {
                             methodNode.instructions.insertBefore(node.getPrevious(), shouldDisableDepthMask((LabelNode) node.getNext()));
                             phase++;
                         }
@@ -66,8 +66,8 @@ public class RendererLivingEntityTransformer implements ITransformer {
 
         list.add(isEntityPlayer());
         list.add(new JumpInsnNode(Opcodes.IFEQ, beforeDisabling));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "getMinecraft", "()Lnet/minecraft/client/Minecraft;", false));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "entityRenderer", "Lnet/minecraft/client/renderer/EntityRenderer;"));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
         list.add(isPlayerNotRenderedSolid());
         list.add(new JumpInsnNode(Opcodes.IFEQ, afterDisabling));
@@ -82,8 +82,8 @@ public class RendererLivingEntityTransformer implements ITransformer {
         list.add(isEntityPlayer());
         list.add(new JumpInsnNode(Opcodes.IFEQ, endOfReplacement));
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "getMinecraft", "()Lnet/minecraft/client/Minecraft;", false));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "entityRenderer", "Lnet/minecraft/client/renderer/EntityRenderer;"));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
         list.add(getPlayerOpacity());
 
@@ -99,8 +99,8 @@ public class RendererLivingEntityTransformer implements ITransformer {
 
     private InsnList isEntityPlayer() {
         InsnList list = new InsnList();
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "getMinecraft", "()Lnet/minecraft/client/Minecraft;", false));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "thePlayer", "Lnet/minecraft/client/entity/EntityPlayerSP;"));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71439_g", "Lnet/minecraft/client/entity/EntityPlayerSP;")); // thePlayer
         list.add(new VarInsnNode(Opcodes.ALOAD, 1));
         list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", false));
         return list;

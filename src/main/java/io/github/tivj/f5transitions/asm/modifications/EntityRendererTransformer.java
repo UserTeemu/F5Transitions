@@ -28,14 +28,14 @@ public class EntityRendererTransformer implements ITransformer {
 
             if (methodNode.name.equals("<init>")) {
                 methodNode.instructions.insert(methodNode.instructions.getFirst().getNext().getNext().getNext().getNext(), initTransitionHelper());
-            } else if (methodName.equals("updateRenderer") || methodName.equals("todo")) {
+            } else if (methodName.equals("updateRenderer") || methodName.equals("func_78464_a")) {
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.PUTFIELD && node.getPrevious().getOpcode() == Opcodes.GETFIELD) {
                         String putField = mapFieldNameFromNode(node);
                         String getField = mapFieldNameFromNode(node.getPrevious());
-                        if ((putField.equals("thirdPersonDistanceTemp") || putField.equals("todo")) && (getField.equals("thirdPersonDistance") || getField.equals("todo"))) {
+                        if ((putField.equals("thirdPersonDistanceTemp") || putField.equals("field_78491_C")) && (getField.equals("thirdPersonDistance") || getField.equals("field_78490_B"))) {
                             methodNode.instructions.insert(node, updatePerspectiveTransitions());
 
                             methodNode.instructions.remove(node.getPrevious().getPrevious().getPrevious());
@@ -46,13 +46,13 @@ public class EntityRendererTransformer implements ITransformer {
                         }
                     }
                 }
-            } else if (methodName.equals("orientCamera") || methodName.equals("todo")) {
+            } else if (methodName.equals("orientCamera") || methodName.equals("func_78467_g")) {
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.GETFIELD) {
                         String fieldName = mapFieldNameFromNode(node);
-                        if (fieldName.equals("thirdPersonView") || fieldName.equals("todo")) {
+                        if (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) {
                             if (node.getNext().getOpcode() == Opcodes.IFLE && node.getNext().getNext() instanceof LabelNode) {
                                 methodNode.instructions.insert(node.getNext(), orIfTransitionNotFinished((LabelNode) node.getNext().getNext(), ((JumpInsnNode) node.getNext()).label));
                                 methodNode.instructions.remove(node.getNext());
@@ -67,7 +67,7 @@ public class EntityRendererTransformer implements ITransformer {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.GETFIELD) {
                         String fieldName = mapFieldNameFromNode(node);
-                        if (fieldName.equals("thirdPersonDistanceTemp") || fieldName.equals("todo")) {
+                        if (fieldName.equals("thirdPersonDistanceTemp") || fieldName.equals("field_78491_C")) {
                             if (node.getNext().getOpcode() == Opcodes.FSUB && node.getPrevious().getOpcode() == Opcodes.ALOAD && node.getNext().getNext().getNext().getNext().getOpcode() == Opcodes.FADD) {
                                 AbstractInsnNode removableNode = node.getNext().getNext().getNext();
                                 for (int i = 0; i < 10; i++) {
@@ -87,7 +87,7 @@ public class EntityRendererTransformer implements ITransformer {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.GETFIELD) {
                         String fieldName = mapFieldNameFromNode(node);
-                        if (fieldName.equals("thirdPersonView") || fieldName.equals("todo")) {
+                        if (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) {
                             if (node.getNext().getOpcode() == Opcodes.ICONST_2 && node.getNext().getNext().getOpcode() == Opcodes.IF_ICMPNE && node.getNext().getNext().getNext() instanceof LabelNode) {
                                 AbstractInsnNode laterNode = node.getNext().getNext().getNext().getNext().getNext().getNext();
 
@@ -131,7 +131,7 @@ public class EntityRendererTransformer implements ITransformer {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.GETFIELD) {
                         String fieldName = mapFieldNameFromNode(node);
-                        if (fieldName.equals("thirdPersonView") || fieldName.equals("todo")) {
+                        if (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) {
                             if (node.getNext().getOpcode() == Opcodes.ICONST_2 && node.getNext().getNext().getOpcode() == Opcodes.IF_ICMPNE && node.getNext().getNext().getNext() instanceof LabelNode) {
                                 AbstractInsnNode laterNode = node.getNext().getNext().getNext().getNext().getNext().getNext();
 
@@ -142,7 +142,7 @@ public class EntityRendererTransformer implements ITransformer {
                                         laterNode.getNext().getNext().getNext().getOpcode() == Opcodes.INVOKESTATIC
                                 ) {
                                     String invokeName = mapMethodNameFromNode(laterNode.getNext().getNext().getNext());
-                                    if (invokeName.equals("rotate") || invokeName.equals("todo")) {
+                                    if (invokeName.equals("rotate") || invokeName.equals("func_179114_b")) {
                                         laterNode = laterNode.getPrevious().getPrevious();
                                         methodNode.instructions.insert(laterNode.getNext(), getYrotationBonus());
 
@@ -221,7 +221,7 @@ public class EntityRendererTransformer implements ITransformer {
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
         list.add(GeneralFunctions.getCameraDistanceMultiplier());
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", "thirdPersonDistance", "F"));
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", "field_78490_B", "F")); // thirdPersonDistance
         list.add(new InsnNode(Opcodes.FMUL));
         return list;
     }
@@ -232,20 +232,7 @@ public class EntityRendererTransformer implements ITransformer {
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
         list.add(GeneralFunctions.isTransitionActive());
-        list.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel)); // todo
-        return list;
-    }
-
-    private InsnList smoothenPointOneOffset() {
-        InsnList list = new InsnList();
-        list.add(new LdcInsnNode(0.1));
-        list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
-        list.add(GeneralFunctions.getCameraDistanceMultiplier());
-        list.add(new InsnNode(Opcodes.FCONST_1));
-        list.add(new InsnNode(Opcodes.FSUB));
-        list.add(new InsnNode(Opcodes.FMUL));
-        list.add(new InsnNode(Opcodes.FSUB));
+        list.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel));
         return list;
     }
 }

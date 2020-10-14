@@ -15,7 +15,6 @@ public interface ITransformer {
         return FMLDeobfuscatingRemapper.INSTANCE.mapMethodDesc(methodNode.desc);
     }
 
-    //Huge thanks to LlamaLad7#7444 for these 2
     default String mapMethodNameFromNode(AbstractInsnNode node) {
         MethodInsnNode methodInsnNode = (MethodInsnNode) node;
         return FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc);
