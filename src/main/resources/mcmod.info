@@ -1,0 +1,11 @@
+[
+  {
+    "modid": "f5transitions",
+    "name": "F5 Transitions",
+    "version": "${version}",
+    "mcversion": "1.8.9",
+    "authorList": [
+      "UserTeemu"
+    ]
+  }
+]
