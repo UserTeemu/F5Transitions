@@ -1,9 +1,6 @@
 package io.github.tivj.f5transitions;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.command.CommandBase;
-import net.minecraft.command.ICommandSender;
-import net.minecraftforge.client.ClientCommandHandler;
 
 import java.util.ArrayList;
 import java.util.Collection;
