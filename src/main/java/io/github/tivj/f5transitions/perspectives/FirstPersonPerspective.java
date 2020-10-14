@@ -13,7 +13,7 @@ public class FirstPersonPerspective implements Perspective {
 
     @Override
     public float getDistanceMultiplier(float distance) {
-        return (TransitionsMod.patcherLoadedInClasspath && PatcherConfig.parallaxFix ? 0.05F : 0.1F) / distance; // in 1st person the camera will be 0.1 blocks behind the player due to EntityRenderer's line 689
+        return -(TransitionsMod.patcherLoadedInClasspath && PatcherConfig.parallaxFix ? 0.05F : -0.1F) / distance; // in 1st person the camera will be 0.1 blocks behind the player due to EntityRenderer's line 689
     }
 
     /**
