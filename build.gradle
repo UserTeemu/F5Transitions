@@ -8,12 +8,10 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
-        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
-apply plugin: 'com.github.johnrengelman.shadow'
 
 version = "0.1"
 group = "io.github.tivj.f5transitions"
@@ -29,22 +27,6 @@ minecraft {
 
     replaceIn "TransitionsMod.java"
     replace "@MOD_VERSION@", project.version
-}
-
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-
-}
-
-shadowJar {
-    
-}
-
-reobf {
-    shadowJar {} // Reobfuscate the shadowed JAR
 }
 
 task moveResources {
@@ -78,6 +60,7 @@ processResources {
 }
 
 jar {
+    exclude "club/sk1er/patcher/**" // excludes the dummy Patcher config file, that is used to solve a conflict
     manifest {
         attributes(
                 "FMLCorePlugin": "io.github.tivj.f5transitions.asm.tweaker.Tweaker",
