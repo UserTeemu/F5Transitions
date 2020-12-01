@@ -60,12 +60,12 @@ public class BytecodeHelper {
         }
         out.append(" Locals: [");
         for (Object local : instruction.local) {
-            out.append(local.toString()+", ");
+            out.append(local.toString()).append(", ");
         }
 
         out.append("] Stacks: [");
         for (Object stack : instruction.stack) {
-            out.append(stack.toString()+", ");
+            out.append(stack.toString()).append(", ");
         }
         out.append("]");
         return out.toString();
