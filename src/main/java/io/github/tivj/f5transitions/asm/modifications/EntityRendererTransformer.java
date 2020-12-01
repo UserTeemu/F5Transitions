@@ -75,7 +75,7 @@ public class EntityRendererTransformer implements ITransformer {
                                     removableNode = removableNode.getPrevious();
                                 }
 
-                                methodNode.instructions.insert(removableNode.getNext(), getCameraDistanceMultiplier());
+                                methodNode.instructions.insert(removableNode.getNext(), getCameraDistance());
                                 break;
                             }
                         }
@@ -214,15 +214,12 @@ public class EntityRendererTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList getCameraDistanceMultiplier() {
+    private InsnList getCameraDistance() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
-        list.add(GeneralFunctions.getCameraDistanceMultiplier());
-        list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", "field_78490_B", "F")); // thirdPersonDistance
-        list.add(new InsnNode(Opcodes.FMUL));
+        list.add(GeneralFunctions.getCameraDistance());
         return list;
     }
 

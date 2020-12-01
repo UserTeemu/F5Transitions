@@ -10,8 +10,8 @@ public class FrontPerspective implements Perspective {
     }
 
     @Override
-    public float getDistanceMultiplier(float distance) {
-        return -1F;
+    public float getCameraDistance(float maxDistance) {
+        return -maxDistance;
     }
 
     /**

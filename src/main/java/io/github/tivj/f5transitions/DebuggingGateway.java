@@ -13,7 +13,7 @@ public class DebuggingGateway {
         List<String> lines = new ArrayList<>();
         if (transition != null) {
             lines.add("Transition ongoing: " + transition.transitionActive);
-            lines.add("Multiplier: " + transition.getDistanceMultiplier(0F));
+            lines.add("Camera distance: " + transition.getCameraDistance(0F));
             lines.add("Y rotation: " + transition.getYRotationBonus(0F));
             lines.add("from -> to perspective: " + (transition.from == null ? "null" : transition.from.getID()) + " -> " + transition.to.getID());
         }

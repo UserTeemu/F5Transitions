@@ -6,11 +6,11 @@ public interface Perspective {
     float getCameraYRotation(TransitionPhase transitionPhase);
 
     /**
-     * Calculates the distance multiplier
-     * @param distance Distance in blocks, when distance multiplier is 1
-     * @return multiplier
+     * Calculates the camera distance in 2nd and 3rd person views.
+     * @param maxDistance Max distance in vanilla
+     * @return Distance that should be used with current perspective
      */
-    float getDistanceMultiplier(float distance);
+    float getCameraDistance(float maxDistance);
     int getID();
 
     /**

@@ -83,12 +83,12 @@ public class TransitionHelper {
     }
 
     @SuppressWarnings("unused") // used in asm
-    public float getDistanceMultiplier(float partialTicks) {
-        float toDistanceMultiplier = to.getDistanceMultiplier(this.entityRenderer.thirdPersonDistance);
-        if (from == null || !transitionActive) return toDistanceMultiplier;
+    public float getCameraDistance(float partialTicks) {
+        float toCameraDistance = to.getCameraDistance(this.entityRenderer.thirdPersonDistance);
+        if (from == null || !transitionActive) return toCameraDistance;
         else {
-            float fromDistanceMultiplier = from.getDistanceMultiplier(this.entityRenderer.thirdPersonDistance);
-            return fromDistanceMultiplier + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (toDistanceMultiplier - fromDistanceMultiplier));
+            float fromCameraDistance = from.getCameraDistance(this.entityRenderer.thirdPersonDistance);
+            return fromCameraDistance + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (toCameraDistance - fromCameraDistance));
         }
     }
 

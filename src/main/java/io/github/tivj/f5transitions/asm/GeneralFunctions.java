@@ -8,8 +8,8 @@ public class GeneralFunctions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "updatePerspectiveTimer", "()V", false);
     }
 
-    public static AbstractInsnNode getCameraDistanceMultiplier() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getDistanceMultiplier", "(F)F", false);
+    public static AbstractInsnNode getCameraDistance() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getCameraDistance", "(F)F", false);
     }
 
     public static AbstractInsnNode getYrotationBonus() {
