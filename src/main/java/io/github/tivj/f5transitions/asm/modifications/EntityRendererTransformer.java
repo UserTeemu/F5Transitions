@@ -9,7 +9,7 @@ import java.util.ListIterator;
 
 /**
  * I want to apologize for really bad looking code, IDK how to make it efficient and pretty at the same time. I chose efficiency.
- * For more human readable information of what this does, see https://gist.github.com/UserTeemu/ad8da79ad8ba3fbdfcf2c1b3ad6a01fc
+ * For more human readable information of what this does, see ASM explainations/EntityRendererTransformer.md
  * Note: the gist uses codebase of the prototype of the mod
  */
 public class EntityRendererTransformer implements ITransformer {
