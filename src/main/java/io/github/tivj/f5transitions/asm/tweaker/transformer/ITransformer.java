@@ -3,9 +3,16 @@ package io.github.tivj.f5transitions.asm.tweaker.transformer;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.objectweb.asm.tree.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public interface ITransformer {
     String[] getClassName();
     void transform(ClassNode classNode, String name);
+
+    default List<String> debuggableClass() {
+        return new ArrayList<>();
+    }
 
     default String mapMethodName(ClassNode classNode, MethodNode methodNode) {
         return FMLDeobfuscatingRemapper.INSTANCE.mapMethodName(classNode.name, methodNode.name, methodNode.desc);
