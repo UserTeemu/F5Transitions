@@ -36,10 +36,11 @@
 ```java
                         if (d7 < d3) {
                             d3 = d7;
-+                       } else if (d3 < 0 && -d7 > d3) {
++                       } else if (d3 < 0D && -d7 > d3) {
 +                           d3 = -d7;
                         }
                     }
++                   d3 = this.perspectiveTransitionHelper.ensureGoodDistance(distance, movingobjectposition == null ? new Vec3(entityPosX - (facingAtXCoord / distance * unmodifiedDistance), entityPosY - (facingAtZCoord / distance * unmodifiedDistance), entityPosZ - (facingAtYCoord / distance * unmodifiedDistance)) : movingobjectposition.hitVec);
                 }
 
 -               if (this.mc.gameSettings.thirdPersonView == 2) {

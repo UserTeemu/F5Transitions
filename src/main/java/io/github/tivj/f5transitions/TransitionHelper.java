@@ -5,8 +5,14 @@ import io.github.tivj.f5transitions.perspectives.BehindPlayerPerspective;
 import io.github.tivj.f5transitions.perspectives.FirstPersonPerspective;
 import io.github.tivj.f5transitions.perspectives.FrontPerspective;
 import io.github.tivj.f5transitions.perspectives.Perspective;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.BlockPos;
+import net.minecraft.util.Vec3;
 
 import java.util.HashSet;
 
@@ -83,7 +89,7 @@ public class TransitionHelper {
     }
 
     @SuppressWarnings("unused") // used in asm
-    public float getCameraDistance(float partialTicks) {
+    public double getCameraDistance(float partialTicks) {
         float toCameraDistance = to.getCameraDistance(this.entityRenderer.thirdPersonDistance);
         if (from == null || !transitionActive) return toCameraDistance;
         else {
@@ -126,5 +132,34 @@ public class TransitionHelper {
         if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
             return this.getPlayerOpacity() > TransitionsConfig.thirdPersonItemHide;
         } else return true;
+    }
+
+    @SuppressWarnings("unused") // used in asm
+    public double ensureGoodDistance(double currentDistance, Vec3 cameraPos) {
+        double smallestDistance = 4D;
+        for (int iterationX = -1; iterationX <= 1; iterationX++) {
+            for (int iterationY = -1; iterationY <= 1; iterationY++) {
+                for (int iterationZ = -1; iterationZ <= 1; iterationZ++) {
+                    BlockPos pos = new BlockPos(cameraPos.addVector(iterationX, iterationY + 0.05D, iterationZ));
+                    IBlockState state = mc.theWorld.getBlockState(pos);
+                    Block block = state.getBlock();
+                    if (!block.equals(Blocks.air)) {
+                        AxisAlignedBB boundingBox = block.getCollisionBoundingBox(mc.theWorld, pos, state);
+                        if (boundingBox != null) {
+                            // distance calculation stolen from https://stackoverflow.com/a/18157551
+                            double dx = Math.max(Math.max(boundingBox.minX - cameraPos.xCoord, cameraPos.xCoord - boundingBox.maxX), 0);
+                            double dy = Math.max(Math.max(boundingBox.minY - cameraPos.yCoord, cameraPos.yCoord - boundingBox.maxY), 0);
+                            double dz = Math.max(Math.max(boundingBox.minZ - cameraPos.zCoord, cameraPos.zCoord - boundingBox.maxZ), 0);
+                            double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                            if (distance < smallestDistance) smallestDistance = distance;
+                        }
+                    }
+                }
+            }
+        }
+        if (smallestDistance <= 0.05D) {
+            currentDistance -= smallestDistance - 0.05D;
+        }
+        return currentDistance;
     }
 }

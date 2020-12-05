@@ -47,6 +47,11 @@ public class EntityRendererTransformer implements ITransformer {
                     }
                 }
             } else if (methodName.equals("orientCamera") || methodName.equals("func_78467_g")) {
+                LabelNode firstUseOfUnmodifiedDistance = new LabelNode();
+                LabelNode lastUseOfUnmodifiedDistance = new LabelNode();
+                LocalVariableNode unmodifiedDistanceVariable = createLocalVariable("unmodifiedD3", "D", firstUseOfUnmodifiedDistance, lastUseOfUnmodifiedDistance, methodNode.localVariables);
+                methodNode.localVariables.add(unmodifiedDistanceVariable);
+
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
@@ -69,13 +74,13 @@ public class EntityRendererTransformer implements ITransformer {
                         String fieldName = mapFieldNameFromNode(node);
                         if (fieldName.equals("thirdPersonDistanceTemp") || fieldName.equals("field_78491_C")) {
                             if (node.getNext().getOpcode() == Opcodes.FSUB && node.getPrevious().getOpcode() == Opcodes.ALOAD && node.getNext().getNext().getNext().getNext().getOpcode() == Opcodes.FADD) {
-                                AbstractInsnNode removableNode = node.getNext().getNext().getNext();
-                                for (int i = 0; i < 10; i++) {
+                                AbstractInsnNode removableNode = node.getNext().getNext().getNext().getNext();
+                                for (int i = 0; i < 11; i++) {
                                     methodNode.instructions.remove(removableNode.getNext());
                                     removableNode = removableNode.getPrevious();
                                 }
 
-                                methodNode.instructions.insert(removableNode.getNext(), getCameraDistance());
+                                methodNode.instructions.insert(removableNode.getNext(), getCameraDistance(unmodifiedDistanceVariable.index, firstUseOfUnmodifiedDistance));
                                 break;
                             }
                         }
@@ -114,10 +119,13 @@ public class EntityRendererTransformer implements ITransformer {
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (
-                        node.getOpcode() == Opcodes.DLOAD && ((VarInsnNode)node).var == 25 &&
+                            node.getOpcode() == Opcodes.DLOAD && ((VarInsnNode)node).var == 25 &&
                             node.getNext().getOpcode() == Opcodes.DSTORE && ((VarInsnNode)node.getNext()).var == 10 &&
+                            node.getNext().getNext() instanceof LabelNode &&
                             node.getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.IFGE
                     ) {
+                        methodNode.instructions.insert(node.getNext().getNext().getNext(), ensureGoodDistance(lastUseOfUnmodifiedDistance, unmodifiedDistanceVariable));
+
                         LabelNode ifNegative = new LabelNode();
                         LabelNode elseLabel = ((JumpInsnNode)node.getPrevious().getPrevious().getPrevious()).label;
                         ((JumpInsnNode)node.getPrevious().getPrevious().getPrevious()).label = ifNegative;
@@ -144,7 +152,7 @@ public class EntityRendererTransformer implements ITransformer {
                                     String invokeName = mapMethodNameFromNode(laterNode.getNext().getNext().getNext());
                                     if (invokeName.equals("rotate") || invokeName.equals("func_179114_b")) {
                                         laterNode = laterNode.getPrevious().getPrevious();
-                                        methodNode.instructions.insert(laterNode.getNext(), getYrotationBonus());
+                                        methodNode.instructions.insert(laterNode.getNext(), rotateYrotationBonus());
 
                                         for (int i = 9; i > 0; i--) { // remove unwanted nodes
                                             if (!(laterNode.getNext() instanceof LabelNode || laterNode.getNext() instanceof LineNumberNode)) {
@@ -205,7 +213,59 @@ public class EntityRendererTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList getYrotationBonus() {
+    private InsnList ensureGoodDistance(LabelNode lastUseOfUnmodifiedDistance, LocalVariableNode unmodifiedDistance) {
+        InsnList list = new InsnList();
+        list.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
+
+        list.add(new VarInsnNode(Opcodes.DLOAD, 10)); // d3 (distance)
+
+        LabelNode ifNonNull = new LabelNode();
+        LabelNode methodCall = new LabelNode();
+        list.add(new VarInsnNode(Opcodes.ALOAD, 24)); // movingobjectposition
+        list.add(new JumpInsnNode(Opcodes.IFNONNULL, ifNonNull));
+        list.add(new TypeInsnNode(Opcodes.NEW, "net/minecraft/util/Vec3"));
+        list.add(new InsnNode(Opcodes.DUP));
+
+        list.add(new VarInsnNode(Opcodes.DLOAD, 4)); // d0 (entityPosZ)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 14)); // d4 (facingAtXCoord)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 10)); // d3 (distance)
+        list.add(new InsnNode(Opcodes.DDIV));
+        list.add(new VarInsnNode(Opcodes.DLOAD, unmodifiedDistance.index));
+        list.add(new InsnNode(Opcodes.DMUL));
+        list.add(new InsnNode(Opcodes.DSUB));
+
+        list.add(new VarInsnNode(Opcodes.DLOAD, 6)); // d1 (entityPosY)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 18)); // d6 (facingAtZCoord)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 10)); // d3 (distance)
+        list.add(new InsnNode(Opcodes.DDIV));
+        list.add(new VarInsnNode(Opcodes.DLOAD, unmodifiedDistance.index));
+        list.add(new InsnNode(Opcodes.DMUL));
+        list.add(new InsnNode(Opcodes.DSUB));
+
+        list.add(new VarInsnNode(Opcodes.DLOAD, 8)); // d2 (entityPosZ)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 16)); // d5 (facingAtYCoord)
+        list.add(new VarInsnNode(Opcodes.DLOAD, 10)); // d3 (distance)
+        list.add(new InsnNode(Opcodes.DDIV));
+        list.add(new VarInsnNode(Opcodes.DLOAD, unmodifiedDistance.index));
+        list.add(new InsnNode(Opcodes.DMUL));
+        list.add(new InsnNode(Opcodes.DSUB));
+
+        list.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "net/minecraft/util/Vec3", "<init>", "(DDD)V", false));
+        list.add(new JumpInsnNode(Opcodes.GOTO, methodCall));
+
+        list.add(ifNonNull);
+        list.add(new VarInsnNode(Opcodes.ALOAD, 24)); // movingobjectposition
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/util/MovingObjectPosition", "hitVec", "Lnet/minecraft/util/Vec3;"));
+
+        list.add(methodCall);
+        list.add(GeneralFunctions.ensureGoodDistance());
+        list.add(new VarInsnNode(Opcodes.DSTORE, 10)); // d3 (distance)
+        list.add(lastUseOfUnmodifiedDistance);
+        return list;
+    }
+
+    private InsnList rotateYrotationBonus() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
@@ -214,12 +274,15 @@ public class EntityRendererTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList getCameraDistance() {
+    private InsnList getCameraDistance(int unmodifiedDistanceIndex, LabelNode firstUseOfUnmodifiedDistance) {
         InsnList list = new InsnList();
+        list.add(firstUseOfUnmodifiedDistance);
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
         list.add(GeneralFunctions.getCameraDistance());
+        list.add(new InsnNode(Opcodes.DUP2));
+        list.add(new VarInsnNode(Opcodes.DSTORE, unmodifiedDistanceIndex));
         return list;
     }
 

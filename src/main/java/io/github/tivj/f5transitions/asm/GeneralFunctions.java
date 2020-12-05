@@ -9,7 +9,7 @@ public class GeneralFunctions {
     }
 
     public static AbstractInsnNode getCameraDistance() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getCameraDistance", "(F)F", false);
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getCameraDistance", "(F)D", false);
     }
 
     public static AbstractInsnNode getYrotationBonus() {
@@ -38,5 +38,9 @@ public class GeneralFunctions {
 
     public static AbstractInsnNode isTransitionActive() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "isTransitionActive", "()Z", false);
+    }
+
+    public static AbstractInsnNode ensureGoodDistance() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "ensureGoodDistance", "(DLnet/minecraft/util/Vec3;)D", false);
     }
 }
