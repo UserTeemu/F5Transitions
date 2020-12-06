@@ -4,6 +4,7 @@ import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRema
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public interface ITransformer {
@@ -38,5 +39,25 @@ public interface ITransformer {
         return fieldNode1.owner.equals(fieldNode2.owner) &&
                fieldNode1.name.equals(fieldNode2.name) &&
                fieldNode1.desc.equals(fieldNode2.desc);
+    }
+
+    default LocalVariableNode createLocalVariable(final String name, final String desc, final LabelNode start, final LabelNode end, List<LocalVariableNode> localVariables) {
+        HashSet<Integer> usedIndexes = new HashSet<>();
+        for (LocalVariableNode localVariable : localVariables) {
+            usedIndexes.add(localVariable.index);
+            if (localVariable.desc.equals("D") || localVariable.desc.equals("L")) usedIndexes.add(localVariable.index+1);
+        }
+
+        boolean needsTwoIndexes = desc.equals("D") || desc.equals("L");
+        int index = 0;
+        while (true) {
+            if (usedIndexes.contains(index)) {
+                index++;
+            } else if (needsTwoIndexes && usedIndexes.contains(index+1)) {
+                index += 2;
+            } else break;
+        }
+
+        return new LocalVariableNode(name, desc, null, start, end, index);
     }
 }
