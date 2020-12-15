@@ -39,8 +39,4 @@ public class GeneralFunctions {
     public static AbstractInsnNode isTransitionActive() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "isTransitionActive", "()Z", false);
     }
-
-    public static AbstractInsnNode ensureGoodDistance() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "ensureGoodDistance", "(DLnet/minecraft/util/Vec3;)D", false);
-    }
 }

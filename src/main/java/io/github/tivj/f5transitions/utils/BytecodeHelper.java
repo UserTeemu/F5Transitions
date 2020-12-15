@@ -1,10 +1,14 @@
 package io.github.tivj.f5transitions.utils;
 
 import io.github.tivj.f5transitions.TransitionsMod;
+import net.minecraft.launchwrapper.Launch;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
+import java.io.File;
 import java.util.ListIterator;
 
 /**
@@ -12,6 +16,32 @@ import java.util.ListIterator;
  * @author UserTeemu
  */
 public class BytecodeHelper {
+    public static boolean dumpUntransformedClassToFile(Class<?> clazz) {
+        try {
+            byte[] bytes = Launch.classLoader.getClassBytes(clazz.getName());
+            if (bytes == null) return false;
+
+            int prefix = 0;
+            String filename = "classdump-"+prefix+"-"+clazz.getName()+".class";
+            while (true) {
+                File file = new File(filename);
+                if (!file.exists()) {
+                    file.createNewFile();
+                    if (file.canWrite()) break;
+                    else return false;
+                }
+                prefix++;
+                filename = "classdump-"+prefix+"-"+clazz.getName()+".class";
+            }
+
+            FileUtils.writeByteArrayToFile(new File(filename), bytes);
+            return true;
+        } catch (Throwable e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public static void printEmAll(InsnList instructions) {
         TransitionsMod.LOGGER.info("BytecodeDump:"+"------- Method dump start --------");
         for (ListIterator<AbstractInsnNode> it = instructions.iterator(); it.hasNext();) {
@@ -22,11 +52,9 @@ public class BytecodeHelper {
             else if (instruction instanceof VarInsnNode)        TransitionsMod.LOGGER.info("BytecodeDump: "+opcode(instruction.getOpcode())+" "+((VarInsnNode) instruction).var);
             else if (instruction instanceof TypeInsnNode)       TransitionsMod.LOGGER.info("BytecodeDump: "+opcode(instruction.getOpcode())+" "+FMLDeobfuscatingRemapper.INSTANCE.mapType(((TypeInsnNode) instruction).desc));
             else if (instruction instanceof LdcInsnNode)        TransitionsMod.LOGGER.info("BytecodeDump: LDC " + ((LdcInsnNode) instruction).cst);
-            else if (instruction instanceof LabelNode)          TransitionsMod.LOGGER.info("BytecodeDump: LABELNODE "+((LabelNode) instruction).getLabel().toString());
-            else if (instruction instanceof LineNumberNode)     {
-                System.out.print("\n");
-                TransitionsMod.LOGGER.info("BytecodeDump: Line: "+((LineNumberNode) instruction).line);
-            } else if (instruction instanceof FrameNode) {
+            else if (instruction instanceof LabelNode)          TransitionsMod.LOGGER.info("BytecodeDump:L"+((LabelNode) instruction).getLabel().toString());
+            else if (instruction instanceof LineNumberNode)     TransitionsMod.LOGGER.info("BytecodeDump: Line: "+((LineNumberNode) instruction).line);
+            else if (instruction instanceof FrameNode) {
                 TransitionsMod.LOGGER.info("BytecodeDump: Frame: "+frameToString((FrameNode) instruction));
             }
 
