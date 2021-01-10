@@ -56,7 +56,7 @@ public class MinecraftTransformer implements ITransformer {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(GeneralFunctions.beforePerspectiveChanges());
         return list;
     }

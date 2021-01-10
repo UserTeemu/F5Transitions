@@ -1,5 +1,6 @@
 package io.github.tivj.f5transitions.asm;
 
+import io.github.tivj.f5transitions.asm.modifications.EntityRendererTransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -38,5 +39,9 @@ public class GeneralFunctions {
 
     public static AbstractInsnNode isTransitionActive() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "isTransitionActive", "()Z", false);
+    }
+
+    public static AbstractInsnNode getTransitionHelper() {
+        return new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc);
     }
 }

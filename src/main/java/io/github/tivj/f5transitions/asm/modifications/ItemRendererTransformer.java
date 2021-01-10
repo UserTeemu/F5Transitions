@@ -25,7 +25,7 @@ public class ItemRendererTransformer implements ITransformer {
                         String fieldName = mapFieldNameFromNode(node.getPrevious());
                         String invokeName = mapMethodNameFromNode(node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious());
                         if (
-                                (fieldName.equals("itemToRender") || invokeName.equals("field_78453_b")) &&
+                                (fieldName.equals("itemToRender") || fieldName.equals("field_78453_b")) &&
                                 (invokeName.equals("pushMatrix") || invokeName.equals("func_179094_E"))
                         ) {
                             methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious().getPrevious(), getYrotationBonus());
@@ -42,7 +42,7 @@ public class ItemRendererTransformer implements ITransformer {
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/ItemRenderer", "field_78455_a", "Lnet/minecraft/client/Minecraft;")); // mc
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
         list.add(GeneralFunctions.getYrotationBonus());
         list.add(new InsnNode(Opcodes.FNEG));

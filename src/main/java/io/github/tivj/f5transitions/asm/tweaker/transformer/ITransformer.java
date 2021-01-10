@@ -1,6 +1,7 @@
 package io.github.tivj.f5transitions.asm.tweaker.transformer;
 
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
+import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.*;
 
 import java.util.ArrayList;

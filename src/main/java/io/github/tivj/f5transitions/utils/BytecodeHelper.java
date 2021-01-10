@@ -2,7 +2,6 @@ package io.github.tivj.f5transitions.utils;
 
 import io.github.tivj.f5transitions.TransitionsMod;
 import net.minecraft.launchwrapper.Launch;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.asm.transformers.deobf.FMLDeobfuscatingRemapper;
 import org.apache.commons.io.FileUtils;
 import org.objectweb.asm.Opcodes;
@@ -52,7 +51,7 @@ public class BytecodeHelper {
             else if (instruction instanceof VarInsnNode)        TransitionsMod.LOGGER.info("BytecodeDump: "+opcode(instruction.getOpcode())+" "+((VarInsnNode) instruction).var);
             else if (instruction instanceof TypeInsnNode)       TransitionsMod.LOGGER.info("BytecodeDump: "+opcode(instruction.getOpcode())+" "+FMLDeobfuscatingRemapper.INSTANCE.mapType(((TypeInsnNode) instruction).desc));
             else if (instruction instanceof LdcInsnNode)        TransitionsMod.LOGGER.info("BytecodeDump: LDC " + ((LdcInsnNode) instruction).cst);
-            else if (instruction instanceof LabelNode)          TransitionsMod.LOGGER.info("BytecodeDump:L"+((LabelNode) instruction).getLabel().toString());
+            else if (instruction instanceof LabelNode)          TransitionsMod.LOGGER.info("BytecodeDump:"+((LabelNode) instruction).getLabel().toString());
             else if (instruction instanceof LineNumberNode)     TransitionsMod.LOGGER.info("BytecodeDump: Line: "+((LineNumberNode) instruction).line);
             else if (instruction instanceof FrameNode) {
                 TransitionsMod.LOGGER.info("BytecodeDump: Frame: "+frameToString((FrameNode) instruction));
@@ -117,7 +116,7 @@ public class BytecodeHelper {
         String desc = instruction.desc;
 
         FMLDeobfuscatingRemapper remapper = FMLDeobfuscatingRemapper.INSTANCE;
-        String toReturn = remapper.mapFieldName(owner, instruction.name, desc);
+        String toReturn = remapper.mapMethodName(owner, instruction.name, desc);
 
         if (desc.startsWith("L")) desc = remapper.mapDesc(desc);
         owner = remapper.mapType(owner);

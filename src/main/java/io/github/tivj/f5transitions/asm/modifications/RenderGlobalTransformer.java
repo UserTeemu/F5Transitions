@@ -30,6 +30,7 @@ public class RenderGlobalTransformer implements ITransformer {
                                 String secondFieldName = mapFieldNameFromNode(abstractInsnNode);
                                 if (secondFieldName.equals("posY") || secondFieldName.equals("field_70163_u")) {
                                     methodNode.instructions.insert(node.getNext(), orIfTransitionNotFinished(((JumpInsnNode)node.getNext()).label));
+                                    return;
                                 }
                             }
                         }
@@ -44,7 +45,7 @@ public class RenderGlobalTransformer implements ITransformer {
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/RenderGlobal", "field_72777_q", "Lnet/minecraft/client/Minecraft;")); // mc
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
+        list.add(getTransitionHelper());
         list.add(isTransitionActive());
         list.add(new JumpInsnNode(Opcodes.IFNE, nextIfStatement));
         return list;

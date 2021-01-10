@@ -55,15 +55,6 @@ public class EntityRendererTransformer implements ITransformer {
                     }
                 }
             } else if (methodName.equals("orientCamera") || methodName.equals("func_78467_g")) {
-                LocalVariableNode blockHitSideVariable = createLocalVariable("blockHitSide", "Lnet/minecraft/util/EnumFacing;", new LabelNode(), new LabelNode(), methodNode.localVariables);
-                methodNode.localVariables.add(blockHitSideVariable);
-                methodNode.instructions.insert(new VarInsnNode(Opcodes.ASTORE, blockHitSideVariable.index));
-                methodNode.instructions.insert(new InsnNode(Opcodes.ACONST_NULL));
-                methodNode.instructions.insert(blockHitSideVariable.start);
-
-                LocalVariableNode closestHitDistanceVariable = createLocalVariable("closestHitDistance", "D", new LabelNode(), new LabelNode(), methodNode.localVariables);
-                methodNode.localVariables.add(closestHitDistanceVariable);
-
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
@@ -120,13 +111,15 @@ public class EntityRendererTransformer implements ITransformer {
                                         }
                                         laterNode = laterNode.getPrevious();
                                     }
+
+                                    // changes multiplier of end vector
                                     AbstractInsnNode lookupNode = laterNode.getNext();
-                                    methodNode.instructions.insert(laterNode, initializeClosestHitDistance(closestHitDistanceVariable));
                                     int occurrences = 0;
                                     while (occurrences < 3) {
                                         if (lookupNode.getOpcode() == Opcodes.DLOAD && ((VarInsnNode) lookupNode).var == 10 && lookupNode.getNext().getOpcode() == Opcodes.DMUL && lookupNode.getNext().getNext().getOpcode() == Opcodes.DSTORE) {
                                             occurrences++;
-                                            ((VarInsnNode) lookupNode).var = closestHitDistanceVariable.index;
+                                            methodNode.instructions.insert(lookupNode, new InsnNode(Opcodes.DADD));
+                                            methodNode.instructions.insert(lookupNode, new LdcInsnNode(0.3D));
                                         }
                                         lookupNode = lookupNode.getNext();
                                     }
@@ -137,21 +130,70 @@ public class EntityRendererTransformer implements ITransformer {
                     }
                 }
 
+                int[] rayTraceModifierIndexes = new int[]{21, 21, 22, 22, 23, 23};
+                for (int i = 0; i < methodNode.instructions.size(); i++) {
+                    AbstractInsnNode node = methodNode.instructions.get(i);
+                    if (node.getOpcode() == Opcodes.FSTORE) {
+                        for (int index = 0; index < rayTraceModifierIndexes.length; index++) {
+                            if (((VarInsnNode) node).var == rayTraceModifierIndexes[index]) {
+                                if (node.getPrevious().getOpcode() == Opcodes.I2F) {
+                                    methodNode.instructions.insertBefore(node, new LdcInsnNode(0.1F));
+                                    methodNode.instructions.insertBefore(node, new InsnNode(Opcodes.FMUL));
+                                    i += 2;
+                                } else if (node.getPrevious().getOpcode() == Opcodes.FMUL) {
+                                    methodNode.instructions.remove(node.getPrevious().getPrevious().getPrevious());
+                                    methodNode.instructions.remove(node.getPrevious().getPrevious());
+                                    methodNode.instructions.remove(node.getPrevious());
+                                    methodNode.instructions.remove(node);
+                                    i -= 4;
+                                } else {
+                                    continue;
+                                }
+                                rayTraceModifierIndexes[index] = -1;
+                                break;
+                            }
+                        }
+
+                        boolean shouldBreak = true;
+                        for (int index : rayTraceModifierIndexes) {
+                            if (index != -1) {
+                                shouldBreak = false;
+                                break;
+                            }
+                        }
+                        if (shouldBreak) break;
+                    }
+                }
+
                 iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
                     if (
-                            node.getOpcode() == Opcodes.DLOAD && ((VarInsnNode)node).var == 25 &&
-                            node.getNext().getOpcode() == Opcodes.DSTORE && ((VarInsnNode)node.getNext()).var == 10 &&
-                            node.getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.IFGE
+                        node.getOpcode() == Opcodes.INVOKEVIRTUAL &&
+                        node.getNext().getOpcode() == Opcodes.ASTORE &&
+                        ((VarInsnNode)node.getNext()).var == 24
                     ) {
-                        LabelNode endLabel = ((JumpInsnNode)node.getPrevious().getPrevious().getPrevious()).label;
-                        for (int i = 8; i > 0; i--) {
-                            methodNode.instructions.remove(node.getNext());
-                            node = node.getPrevious();
+                        String invokeName = mapMethodNameFromNode(node);
+                        if (invokeName.equals("rayTraceBlocks") || invokeName.equals("func_72933_a")) {
+                            methodNode.instructions.insertBefore(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/tivj/f5transitions/utils/RaytracingUtil", "rayTraceBlocks", "(Lnet/minecraft/world/World;Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;", false));
+                            methodNode.instructions.remove(node);
+                            break;
                         }
+                    }
+                }
 
-                        methodNode.instructions.insert(node.getNext(), orIfInThirdPersonThenStoreNegative(endLabel, blockHitSideVariable, closestHitDistanceVariable));
+                iterator = methodNode.instructions.iterator();
+                while (iterator.hasNext()) {
+                    AbstractInsnNode node = iterator.next();
+                    if (
+                        node.getOpcode() == Opcodes.DLOAD && ((VarInsnNode)node).var == 25 &&
+                        node.getNext().getOpcode() == Opcodes.DSTORE && ((VarInsnNode)node.getNext()).var == 10 &&
+                        node.getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.IFGE
+                    ) {
+                        LabelNode ifNegative = new LabelNode();
+                        LabelNode elseLabel = ((JumpInsnNode)node.getPrevious().getPrevious().getPrevious()).label;
+                        ((JumpInsnNode)node.getPrevious().getPrevious().getPrevious()).label = ifNegative;
+                        methodNode.instructions.insert(node.getNext(), orIfInThirdPersonThenStoreNegative(ifNegative, elseLabel));
                         break;
                     }
                 }
@@ -189,170 +231,29 @@ public class EntityRendererTransformer implements ITransformer {
                         }
                     }
                 }
-
-                iterator = methodNode.instructions.iterator();
-                int negativeD3Occurrences = 0;
-                while (iterator.hasNext()) {
-                    AbstractInsnNode node = iterator.next();
-                    if (
-                            node.getOpcode() == Opcodes.DLOAD && ((VarInsnNode)node).var == 10 &&
-                            node.getPrevious().getOpcode() == Opcodes.FCONST_0 &&
-                            node.getNext().getOpcode() == Opcodes.DNEG &&
-                            node.getNext().getNext().getOpcode() == Opcodes.D2F &&
-                            node.getNext().getNext().getNext().getOpcode() == Opcodes.INVOKESTATIC
-                    ) {
-                        negativeD3Occurrences++;
-                        if (negativeD3Occurrences > 1) {
-                            methodNode.instructions.insertBefore(node.getNext().getNext().getNext().getNext(), translateZByConstantIfSideHit(blockHitSideVariable));
-                            break;
-                        }
-                    }
-                }
-
-                methodNode.instructions.insertBefore(methodNode.instructions.getLast().getPrevious(), translateZIfSideExists(blockHitSideVariable));
             }
         }
     }
 
-    private InsnList translateZByConstantIfSideHit(LocalVariableNode blockHitSideVariable) {
+    private InsnList orIfInThirdPersonThenStoreNegative(LabelNode ifNegative, LabelNode elseLabel) {
         InsnList list = new InsnList();
-        LabelNode end = new LabelNode();
+        list.add(new JumpInsnNode(Opcodes.GOTO, elseLabel));
 
-        list.add(new VarInsnNode(Opcodes.ALOAD, blockHitSideVariable.index));
-        list.add(new JumpInsnNode(Opcodes.IFNULL, end));
-        list.add(new InsnNode(Opcodes.FCONST_0));
-        list.add(new InsnNode(Opcodes.FCONST_0));
-        list.add(new LdcInsnNode(0.03F));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179109_b", "(FFF)V", false)); // translate
-
-        list.add(end);
-        return list;
-    }
-
-    private InsnList translateZIfSideExists(LocalVariableNode blockHitSideVariable) {
-        InsnList list = new InsnList();
-        LabelNode end = new LabelNode();
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, blockHitSideVariable.index));
-        list.add(new JumpInsnNode(Opcodes.IFNULL, end));
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, blockHitSideVariable.index));
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/EnumFacing", "func_176730_m", "()Lnet/minecraft/util/Vec3i;", false)); // getDirectionVec
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/Vec3i", "func_177958_n", "()I", false)); // getX
-        list.add(new InsnNode(Opcodes.INEG));
-        list.add(new InsnNode(Opcodes.I2F));
-        list.add(new LdcInsnNode(0.06F));
-        list.add(new InsnNode(Opcodes.FMUL));
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, blockHitSideVariable.index));
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/EnumFacing", "func_176730_m", "()Lnet/minecraft/util/Vec3i;", false)); // getDirectionVec
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/Vec3i", "func_177956_o", "()I", false)); // getY
-        list.add(new InsnNode(Opcodes.INEG));
-        list.add(new InsnNode(Opcodes.I2F));
-        list.add(new LdcInsnNode(0.06F));
-        list.add(new InsnNode(Opcodes.FMUL));
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, blockHitSideVariable.index));
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/EnumFacing", "func_176730_m", "()Lnet/minecraft/util/Vec3i;", false)); // getDirectionVec
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/util/Vec3i", "func_177952_p", "()I", false)); // getZ
-        list.add(new InsnNode(Opcodes.INEG));
-        list.add(new InsnNode(Opcodes.I2F));
-        list.add(new LdcInsnNode(0.06F));
-        list.add(new InsnNode(Opcodes.FMUL));
-
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179109_b", "(FFF)V", false)); // translate
-        list.add(blockHitSideVariable.end);
-        list.add(end);
-        return list;
-    }
-
-    /** same as:
-        if (hitDistance < 4D) {
-            if (hitDistance < distance) {
-                distance = hitDistance;
-            } else if (distance < 0D && -hitDistance > distance) {
-                distance = -hitDistance;
-            }
-        }
-
-        if (hitDistance < closestHitDistance) {
-            closestHitDistance = hitDistance;
-            side = movingobjectposition.sideHit;
-        } else if (closestHitDistance < 0D && -hitDistance > closestHitDistance) {
-            closestHitDistance = -hitDistance;
-            side = movingobjectposition.sideHit;
-        }
-     */
-    private InsnList orIfInThirdPersonThenStoreNegative(LabelNode end, LocalVariableNode blockHitSideVariable, LocalVariableNode closestHitDistanceVariable) {
-        InsnList list = new InsnList();
-
-        LabelNode checkIfNegativeDistance = new LabelNode();
-        LabelNode checkIfClosestHitDistanceShouldBeChanged = new LabelNode();
-        LabelNode checkIfNegativeClosestDistance = new LabelNode();
-
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new LdcInsnNode(4D));
-        list.add(new InsnNode(Opcodes.DCMPG));
-        list.add(new JumpInsnNode(Opcodes.IFGE, checkIfClosestHitDistanceShouldBeChanged));
-
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new VarInsnNode(Opcodes.DLOAD, 10));
-        list.add(new InsnNode(Opcodes.DCMPG));
-        list.add(new JumpInsnNode(Opcodes.IFGE, checkIfNegativeDistance));
-
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new VarInsnNode(Opcodes.DSTORE, 10));
-        list.add(new JumpInsnNode(Opcodes.GOTO, checkIfClosestHitDistanceShouldBeChanged));
-
-        list.add(checkIfNegativeDistance);
+        list.add(ifNegative);
         list.add(new VarInsnNode(Opcodes.DLOAD, 10));
         list.add(new InsnNode(Opcodes.DCONST_0));
         list.add(new InsnNode(Opcodes.DCMPG));
-        list.add(new JumpInsnNode(Opcodes.IFGE, checkIfClosestHitDistanceShouldBeChanged));
+        list.add(new JumpInsnNode(Opcodes.IFGE, elseLabel));
+
         list.add(new VarInsnNode(Opcodes.DLOAD, 25));
         list.add(new InsnNode(Opcodes.DNEG));
         list.add(new VarInsnNode(Opcodes.DLOAD, 10));
         list.add(new InsnNode(Opcodes.DCMPL));
-        list.add(new JumpInsnNode(Opcodes.IFLE, checkIfClosestHitDistanceShouldBeChanged));
+        list.add(new JumpInsnNode(Opcodes.IFLE, elseLabel));
 
         list.add(new VarInsnNode(Opcodes.DLOAD, 25));
         list.add(new InsnNode(Opcodes.DNEG));
         list.add(new VarInsnNode(Opcodes.DSTORE, 10));
-
-        list.add(checkIfClosestHitDistanceShouldBeChanged);
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new VarInsnNode(Opcodes.DLOAD, closestHitDistanceVariable.index));
-        list.add(new InsnNode(Opcodes.DCMPG));
-        list.add(new JumpInsnNode(Opcodes.IFGE, checkIfNegativeClosestDistance));
-
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new VarInsnNode(Opcodes.DSTORE, closestHitDistanceVariable.index));
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, 24));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/util/MovingObjectPosition", "field_178784_b", "Lnet/minecraft/util/EnumFacing;")); // sideHit
-        list.add(new VarInsnNode(Opcodes.ASTORE, blockHitSideVariable.index));
-        list.add(new JumpInsnNode(Opcodes.GOTO, end));
-
-        list.add(checkIfNegativeClosestDistance);
-        list.add(new VarInsnNode(Opcodes.DLOAD, closestHitDistanceVariable.index));
-        list.add(new InsnNode(Opcodes.DCONST_0));
-        list.add(new InsnNode(Opcodes.DCMPG));
-        list.add(new JumpInsnNode(Opcodes.IFGE, end));
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new InsnNode(Opcodes.DNEG));
-        list.add(new VarInsnNode(Opcodes.DLOAD, closestHitDistanceVariable.index));
-        list.add(new InsnNode(Opcodes.DCMPL));
-        list.add(new JumpInsnNode(Opcodes.IFLE, end));
-
-        list.add(new VarInsnNode(Opcodes.DLOAD, 25));
-        list.add(new InsnNode(Opcodes.DNEG));
-        list.add(new VarInsnNode(Opcodes.DSTORE, closestHitDistanceVariable.index));
-
-        list.add(new VarInsnNode(Opcodes.ALOAD, 24));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/util/MovingObjectPosition", "field_178784_b", "Lnet/minecraft/util/EnumFacing;")); // sideHit
-        list.add(new VarInsnNode(Opcodes.ASTORE, blockHitSideVariable.index));
-
-        list.add(closestHitDistanceVariable.end);
         return list;
     }
 
@@ -371,7 +272,7 @@ public class EntityRendererTransformer implements ITransformer {
     private InsnList updatePerspectiveTransitions() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(GeneralFunctions.updatePerspectiveTransitions());
         return list;
     }
@@ -379,7 +280,7 @@ public class EntityRendererTransformer implements ITransformer {
     private InsnList rotateYrotationBonus() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
         list.add(GeneralFunctions.getYrotationBonus());
         return list;
@@ -388,7 +289,7 @@ public class EntityRendererTransformer implements ITransformer {
     private InsnList getCameraDistance() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
         list.add(GeneralFunctions.getCameraDistance());
         return list;
@@ -398,33 +299,9 @@ public class EntityRendererTransformer implements ITransformer {
         InsnList list = new InsnList();
         list.add(new JumpInsnNode(Opcodes.IFGT, ifTrue));
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", transitionHelper.name, transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(GeneralFunctions.isTransitionActive());
         list.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel));
-        return list;
-    }
-
-    private InsnList initializeClosestHitDistance(LocalVariableNode closestHitDistanceVariable) {
-        InsnList list = new InsnList();
-        list.add(closestHitDistanceVariable.start);
-        list.add(new VarInsnNode(Opcodes.DLOAD, 10));
-
-            list.add(new VarInsnNode(Opcodes.DLOAD, 10));
-            list.add(new InsnNode(Opcodes.DCONST_0));
-            list.add(new InsnNode(Opcodes.DCMPL));
-            LabelNode ifLess = new LabelNode();
-            list.add(new JumpInsnNode(Opcodes.IFLE, ifLess));
-
-            list.add(new InsnNode(Opcodes.DCONST_1));
-            LabelNode continue_ = new LabelNode();
-            list.add(new JumpInsnNode(Opcodes.GOTO, continue_));
-
-            list.add(ifLess);
-            list.add(new LdcInsnNode(-1D));
-
-        list.add(continue_);
-        list.add(new InsnNode(Opcodes.DADD));
-        list.add(new VarInsnNode(Opcodes.DSTORE, closestHitDistanceVariable.index));
         return list;
     }
 }

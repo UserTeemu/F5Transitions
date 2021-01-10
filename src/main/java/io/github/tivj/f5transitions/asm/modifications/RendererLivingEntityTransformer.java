@@ -1,5 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
+import io.github.tivj.f5transitions.asm.GeneralFunctions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -33,10 +34,10 @@ public class RendererLivingEntityTransformer implements ITransformer {
                             phase++;
                         }
                     } else if (phase == 1 && node.getOpcode() == Opcodes.LDC && ((LdcInsnNode)node).cst.equals(0.15F)) { // change GlStateManager.color's alpha
-                            LabelNode afterNormalValue = new LabelNode();
-                            methodNode.instructions.insert(node, afterNormalValue);
-                            methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, false));
-                            phase++;
+                        LabelNode afterNormalValue = new LabelNode();
+                        methodNode.instructions.insert(node, afterNormalValue);
+                        methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, false));
+                        phase++;
 
                     } else if (phase == 2 && node.getOpcode() == Opcodes.INVOKESTATIC && node.getPrevious().getOpcode() == Opcodes.ICONST_0 && node.getNext() instanceof LabelNode) {// disable depth mask if needed
                         String invokeName = mapMethodNameFromNode(node);
@@ -68,7 +69,7 @@ public class RendererLivingEntityTransformer implements ITransformer {
         list.add(new JumpInsnNode(Opcodes.IFEQ, beforeDisabling));
         list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(isPlayerNotRenderedSolid());
         list.add(new JumpInsnNode(Opcodes.IFEQ, afterDisabling));
         list.add(beforeDisabling);
@@ -84,7 +85,7 @@ public class RendererLivingEntityTransformer implements ITransformer {
 
         list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc));
+        list.add(GeneralFunctions.getTransitionHelper());
         list.add(getPlayerOpacity());
 
         if (divideByTen) {
@@ -97,11 +98,11 @@ public class RendererLivingEntityTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList isEntityPlayer() {
+    public static InsnList isEntityPlayer() {
         InsnList list = new InsnList();
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71439_g", "Lnet/minecraft/client/entity/EntityPlayerSP;")); // thePlayer
         list.add(new VarInsnNode(Opcodes.ALOAD, 1));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
+        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/client/Minecraft", "func_175606_aa", "()Lnet/minecraft/entity/Entity;", false)); // getRenderViewEntity
         list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", false));
         return list;
     }

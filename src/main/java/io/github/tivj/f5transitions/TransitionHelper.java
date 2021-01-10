@@ -8,8 +8,8 @@ import io.github.tivj.f5transitions.perspectives.Perspective;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 
-import javax.annotation.Nullable;
 import java.util.HashSet;
+import java.util.Random;
 
 import static io.github.tivj.f5transitions.TransitionPhase.FROM;
 import static io.github.tivj.f5transitions.utils.CalculationHelper.easeClamped;
@@ -23,7 +23,6 @@ public class TransitionHelper {
         perspectives.add(new FrontPerspective());
     }
 
-    @Nullable
     public Perspective from;
     public Perspective to;
     public float progress = 0F;

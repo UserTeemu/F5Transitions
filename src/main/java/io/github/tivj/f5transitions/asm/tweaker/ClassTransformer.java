@@ -26,12 +26,15 @@ public class ClassTransformer implements IClassTransformer {
 
     public ClassTransformer() {
         registerTransformer(new EntityRendererTransformer());
-        registerTransformer(new LayerCustomHeadTransformer());
-        registerTransformer(new LayerHeldItemTransformer());
+        registerTransformer(new LayerHeldItemAndCustomHeadTransformer());
         registerTransformer(new MinecraftTransformer());
         registerTransformer(new RendererLivingEntityTransformer());
         registerTransformer(new RenderGlobalTransformer());
         registerTransformer(new ItemRendererTransformer());
+
+        registerTransformer(new BlockAABBProviderTransformer.BlockTransformer());
+        registerTransformer(new BlockAABBProviderTransformer.BlockStairsTransformer());
+        registerTransformer(new BlockAABBProviderTransformer.PlaceholderMethodReplacerTransformer());
 
         registerTransformer(new GuiOverlayDebugTransformerForDebug());
     }
