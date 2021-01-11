@@ -17,5 +17,4 @@ public interface Perspective {
      * Used to calculate the player's opacity only during transition to this perspective.
      */
     float getPlayerOpacity(float progress);
-    float getDefaultPlayerOpacity();
 }

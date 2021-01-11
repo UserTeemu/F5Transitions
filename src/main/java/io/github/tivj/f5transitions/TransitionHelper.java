@@ -9,7 +9,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
 
 import java.util.HashSet;
-import java.util.Random;
 
 import static io.github.tivj.f5transitions.TransitionPhase.FROM;
 import static io.github.tivj.f5transitions.utils.CalculationHelper.easeClamped;

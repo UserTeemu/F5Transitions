@@ -28,11 +28,6 @@ public class FirstPersonPerspective implements Perspective {
     }
 
     @Override
-    public float getDefaultPlayerOpacity() {
-        return 0F;
-    }
-
-    @Override
     public int getID() {
         return 0;
     }

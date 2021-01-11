@@ -23,11 +23,6 @@ public class FrontPerspective implements Perspective {
     }
 
     @Override
-    public float getDefaultPlayerOpacity() {
-        return 1F;
-    }
-
-    @Override
     public int getID() {
         return 2;
     }
