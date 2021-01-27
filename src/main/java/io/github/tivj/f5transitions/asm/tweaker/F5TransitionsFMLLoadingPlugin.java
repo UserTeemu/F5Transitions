@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 import java.util.Map;
 
 @IFMLLoadingPlugin.MCVersion(ForgeVersion.mcVersion)
-public class Tweaker implements IFMLLoadingPlugin {
+public class F5TransitionsFMLLoadingPlugin implements IFMLLoadingPlugin {
     @Override
     public String[] getASMTransformerClass() {
         return new String[]{ClassTransformer.class.getName()};

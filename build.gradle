@@ -8,10 +8,12 @@ buildscript {
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:4.0.4'
     }
 }
 
 apply plugin: 'net.minecraftforge.gradle.forge'
+apply plugin: 'com.github.johnrengelman.shadow'
 
 version = "0.1"
 group = "io.github.tivj.f5transitions"
@@ -24,9 +26,35 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
+    clientRunArgs += " --tweakClass io.github.tivj.f5transitions.asm.tweaker.F5TransitionsTweaker"
 
     replaceIn "TransitionsMod.java"
     replace "@MOD_VERSION@", project.version
+}
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url 'https://repo.spongepowered.org/maven' }
+    maven { url "https://repo.sk1er.club/repository/maven-public" }
+}
+
+dependencies {
+    compile "net.modcore:Loader:2.0.0"
+    provided("net.modcore:ModCore:714-10809-SNAPSHOT") {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'asm'
+    }
+}
+
+shadowJar {
+    baseName = jar.baseName
+    classifier = jar.classifier
+}
+
+reobf {
+    shadowJar {} // Reobfuscate the shadowed JAR
 }
 
 task moveResources {
@@ -63,9 +91,8 @@ jar {
     exclude "club/sk1er/patcher/**" // excludes the dummy Patcher config file, that is used to solve a conflict
     manifest {
         attributes(
-                "FMLCorePlugin": "io.github.tivj.f5transitions.asm.tweaker.Tweaker",
-                "ForceLoadAsMod": true,
-                "FMLCorePluginContainsFMLMod": true,
+                "TweakClass": "io.github.tivj.f5transitions.asm.tweaker.F5TransitionsTweaker",
+                "TweakOrder": "0",
                 "ModSide": "CLIENT",
                 'FMLAT': 'f5transitions_at.cfg'
         )
