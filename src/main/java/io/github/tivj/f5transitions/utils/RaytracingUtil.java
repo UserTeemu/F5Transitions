@@ -1,7 +1,8 @@
 package io.github.tivj.f5transitions.utils;
 
 import io.github.tivj.f5transitions.asm.BlockPlaceholder;
-import net.minecraft.block.Block;
+import io.github.tivj.f5transitions.config.TransitionsConfig;
+import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.*;
 import net.minecraft.world.World;
@@ -35,10 +36,11 @@ public class RaytracingUtil {
                 Vec3 relativeStartVec = vec3.addVector(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
 
                 block.setBlockBoundsBasedOnState(world, blockPos);
-                if (block.canCollideCheck(blockState, false)) {
+                if (block.canCollideCheck(blockState, false) && !TransitionsConfig.cameraCanGoThroughBlock(block)) {
                     Set<AxisAlignedBB> boundingBoxes = new HashSet<>();
                     BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing(block, world, blockPos, blockState, boundingBoxes);
 
+                    //noinspection ConstantConditions - IntelliJ shouldn't warn that there are never any entries in boundingBoxes, because they are added with bytecode modification.
                     if (boundingBoxes.size() == 0) {
                         boundingBoxes.add(getAABBForBlock(block));
                     }
@@ -143,11 +145,12 @@ public class RaytracingUtil {
             IBlockState iterationBlockState = world.getBlockState(iterationBlockPos);
             Block iterationBlock = iterationBlockState.getBlock();
 
-            if (!iterationBlock.canCollideCheck(iterationBlockState, false)) continue;
+            if (!iterationBlock.canCollideCheck(iterationBlockState, false) || TransitionsConfig.cameraCanGoThroughBlock(iterationBlock)) continue;
 
             Set<AxisAlignedBB> boundingBoxes = new HashSet<>();
             BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing(iterationBlock, world, iterationBlockPos, iterationBlockState, boundingBoxes);
 
+            //noinspection ConstantConditions - IntelliJ shouldn't warn that there are never any entries in boundingBoxes, because they are added with bytecode modification.
             if (boundingBoxes.size() == 0) {
                 iterationBlock.setBlockBoundsBasedOnState(world, iterationBlockPos);
                 boundingBoxes.add(getAABBForBlock(iterationBlock));
