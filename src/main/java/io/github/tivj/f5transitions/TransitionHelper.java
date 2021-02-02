@@ -7,11 +7,12 @@ import io.github.tivj.f5transitions.perspectives.FrontPerspective;
 import io.github.tivj.f5transitions.perspectives.Perspective;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
+import net.minecraft.util.MathHelper;
 
 import java.util.HashSet;
 
 import static io.github.tivj.f5transitions.TransitionPhase.FROM;
-import static io.github.tivj.f5transitions.utils.CalculationHelper.easeClamped;
+import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.*;
 
 public class TransitionHelper {
     private static final HashSet<Perspective> perspectives = new HashSet<>();
@@ -71,8 +72,8 @@ public class TransitionHelper {
     @SuppressWarnings("unused") // used in asm
     public void updatePerspectiveTimer() {
         if (transitionActive) {
-            progress += TransitionsConfig.perspectiveTimerIncreaseValuePerTick;
-            if (progress >= TransitionsConfig.maxPerpectiveTimer + TransitionsConfig.perspectiveTimerIncreaseValuePerTick) {
+            progress++;
+            if (progress >= TransitionsConfig.maxPerpectiveTimer + 1F) {
                 transitionActive = false;
                 progress = TransitionsConfig.maxPerpectiveTimer;
                 progressOfMax = 1F;
@@ -89,14 +90,14 @@ public class TransitionHelper {
         if (from == null || !transitionActive) return toCameraDistance;
         else {
             float fromCameraDistance = from.getCameraDistance(this.entityRenderer.thirdPersonDistance);
-            return fromCameraDistance + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (toCameraDistance - fromCameraDistance));
+            return fromCameraDistance + (DISTANCE.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.maxPerpectiveTimer, 0F, 1F)) * (toCameraDistance - fromCameraDistance));
         }
     }
 
     @SuppressWarnings("unused") // used in asm
     public float getYRotationBonus(float partialTicks) {
         if (from == null || !transitionActive) return to.getCameraYRotation(TransitionPhase.NO_TRANSITION);
-        else return from.getCameraYRotation(FROM) + (easeClamped((progress + (partialTicks * TransitionsConfig.perspectiveTimerIncreaseValuePerTick)) / TransitionsConfig.maxPerpectiveTimer) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
+        else return from.getCameraYRotation(FROM) + (ROTATION.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.maxPerpectiveTimer, 0F, 1F)) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
     }
 
     @SuppressWarnings("unused") // used in asm

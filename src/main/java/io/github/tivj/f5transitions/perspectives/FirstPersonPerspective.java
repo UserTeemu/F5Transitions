@@ -5,12 +5,12 @@ import io.github.tivj.f5transitions.TransitionPhase;
 import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 
-import static io.github.tivj.f5transitions.utils.CalculationHelper.ease;
+import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.OPACITY;
 
 public class FirstPersonPerspective implements Perspective {
     @Override
     public float getCameraYRotation(TransitionPhase transitionPhase) {
-        if (TransitionsConfig.continuousRotation && transitionPhase == TransitionPhase.TO) return TransitionsConfig.rotateCameraToLeft ? -360F : 360F;
+        if (TransitionsConfig.sameCameraRotationDirection && transitionPhase == TransitionPhase.TO) return TransitionsConfig.rotateCameraClockwise ? 360F : -360F;
         else return 0F;
     }
 
@@ -24,7 +24,7 @@ public class FirstPersonPerspective implements Perspective {
      */
     @Override
     public float getPlayerOpacity(float progress) {
-        return ease(1F - progress);
+        return OPACITY.getValue(1F - progress);
     }
 
     @Override

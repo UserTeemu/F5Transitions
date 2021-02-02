@@ -2,7 +2,7 @@ package io.github.tivj.f5transitions.perspectives;
 
 import io.github.tivj.f5transitions.TransitionPhase;
 
-import static io.github.tivj.f5transitions.utils.CalculationHelper.ease;
+import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.OPACITY;
 
 public class BehindPlayerPerspective implements Perspective {
     @Override
@@ -20,7 +20,7 @@ public class BehindPlayerPerspective implements Perspective {
      */
     @Override
     public float getPlayerOpacity(float progress) {
-        return ease(progress);
+        return OPACITY.getValue(progress);
     }
 
     @Override
