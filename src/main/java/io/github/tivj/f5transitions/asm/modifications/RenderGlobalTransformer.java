@@ -1,12 +1,13 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
-import static io.github.tivj.f5transitions.asm.GeneralFunctions.*;
+import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
 
 public class RenderGlobalTransformer implements ITransformer {
     @Override
@@ -44,7 +45,7 @@ public class RenderGlobalTransformer implements ITransformer {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/RenderGlobal", "field_72777_q", "Lnet/minecraft/client/Minecraft;")); // mc
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
+        list.add(CommonInstructions.getEntityRendererFromMCInstance());
         list.add(getTransitionHelper());
         list.add(isTransitionActive());
         list.add(new JumpInsnNode(Opcodes.IFNE, nextIfStatement));

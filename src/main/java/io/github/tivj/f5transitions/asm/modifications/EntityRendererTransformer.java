@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.GeneralFunctions;
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -272,26 +272,26 @@ public class EntityRendererTransformer implements ITransformer {
     private InsnList updatePerspectiveTransitions() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(GeneralFunctions.getTransitionHelper());
-        list.add(GeneralFunctions.updatePerspectiveTransitions());
+        list.add(CommonInstructions.getTransitionHelper());
+        list.add(CommonInstructions.updatePerspectiveTransitions());
         return list;
     }
 
     private InsnList rotateYrotationBonus() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(GeneralFunctions.getTransitionHelper());
+        list.add(CommonInstructions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
-        list.add(GeneralFunctions.getYrotationBonus());
+        list.add(CommonInstructions.getYrotationBonus());
         return list;
     }
 
     private InsnList getCameraDistance() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(GeneralFunctions.getTransitionHelper());
+        list.add(CommonInstructions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
-        list.add(GeneralFunctions.getCameraDistance());
+        list.add(CommonInstructions.getCameraDistance());
         return list;
     }
 
@@ -299,8 +299,8 @@ public class EntityRendererTransformer implements ITransformer {
         InsnList list = new InsnList();
         list.add(new JumpInsnNode(Opcodes.IFGT, ifTrue));
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(GeneralFunctions.getTransitionHelper());
-        list.add(GeneralFunctions.isTransitionActive());
+        list.add(CommonInstructions.getTransitionHelper());
+        list.add(CommonInstructions.isTransitionActive());
         list.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel));
         return list;
     }

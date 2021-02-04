@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.GeneralFunctions;
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -41,10 +41,10 @@ public class ItemRendererTransformer implements ITransformer {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/ItemRenderer", "field_78455_a", "Lnet/minecraft/client/Minecraft;")); // mc
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(GeneralFunctions.getTransitionHelper());
+        list.add(CommonInstructions.getEntityRendererFromMCInstance());
+        list.add(CommonInstructions.getTransitionHelper());
         list.add(new VarInsnNode(Opcodes.FLOAD, 1));
-        list.add(GeneralFunctions.getYrotationBonus());
+        list.add(CommonInstructions.getYrotationBonus());
         list.add(new InsnNode(Opcodes.FNEG));
         list.add(new InsnNode(Opcodes.FCONST_0));
         list.add(new InsnNode(Opcodes.FCONST_1));

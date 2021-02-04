@@ -107,6 +107,16 @@ public class TransitionHelper {
     }
 
     @SuppressWarnings("unused") // used in asm
+    public boolean shouldDisableDepthMask() {
+        return this.getPlayerOpacity() < TransitionsConfig.playerSolidnessPoint;
+    }
+
+    @SuppressWarnings("unused") // used in asm
+    public float getArmorOpacity() {
+        return getPlayerOpacity();
+    }
+
+    @SuppressWarnings("unused") // used in asm
     public boolean isTransitionActive() {
         return this.transitionActive;
     }
@@ -116,11 +126,6 @@ public class TransitionHelper {
         if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
             return this.getPlayerOpacity() > TransitionsConfig.customHeadHide;
         } else return true;
-    }
-
-    @SuppressWarnings("unused") // used in asm
-    public boolean isPlayerNotRenderedSolid() {
-        return this.getPlayerOpacity() < TransitionsConfig.playerSolidnessPoint;
     }
 
     @SuppressWarnings("unused") // used in asm

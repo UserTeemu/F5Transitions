@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.GeneralFunctions;
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -55,9 +55,9 @@ public class MinecraftTransformer implements ITransformer {
     private InsnList beforePerspectiveChanged() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(GeneralFunctions.getTransitionHelper());
-        list.add(GeneralFunctions.beforePerspectiveChanges());
+        list.add(CommonInstructions.getEntityRendererFromMCInstance());
+        list.add(CommonInstructions.getTransitionHelper());
+        list.add(CommonInstructions.beforePerspectiveChanges());
         return list;
     }
 }

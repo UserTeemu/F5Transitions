@@ -1,6 +1,6 @@
-package io.github.tivj.f5transitions.asm.modifications;
+package io.github.tivj.f5transitions.asm.modifications.opacity;
 
-import io.github.tivj.f5transitions.asm.GeneralFunctions;
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
@@ -24,13 +24,13 @@ public class LayerHeldItemAndCustomHeadTransformer implements ITransformer {
                         AbstractInsnNode node = iterator.next();
                         if (node.getOpcode() == Opcodes.ALOAD && ((VarInsnNode) node).var == 9) {
                             if (node.getNext().getOpcode() == Opcodes.IFNULL) { // if in debug
-                                methodNode.instructions.insert(node.getNext(), addBytecode(GeneralFunctions.shouldHeldItemBeRenderedInThirdPerson(), (LabelNode) node.getNext().getNext(), ((JumpInsnNode) node.getNext()).label));
+                                methodNode.instructions.insert(node.getNext(), addBytecode(CommonInstructions.shouldHeldItemBeRenderedInThirdPerson(), (LabelNode) node.getNext().getNext(), ((JumpInsnNode) node.getNext()).label));
                                 return;
                             } else if (node.getNext().getOpcode() == Opcodes.IFNONNULL) { // if in production
                                 LabelNode oldLabel = ((JumpInsnNode) node.getNext()).label;
                                 methodNode.instructions.insert(node.getNext(), new JumpInsnNode(Opcodes.IFNULL, (LabelNode) node.getNext().getNext()));
                                 methodNode.instructions.remove(node.getNext());
-                                methodNode.instructions.insert(node.getNext(), addBytecode(GeneralFunctions.shouldHeldItemBeRenderedInThirdPerson(), oldLabel, null));
+                                methodNode.instructions.insert(node.getNext(), addBytecode(CommonInstructions.shouldHeldItemBeRenderedInThirdPerson(), oldLabel, null));
                                 return;
                             }
                         }
@@ -42,13 +42,13 @@ public class LayerHeldItemAndCustomHeadTransformer implements ITransformer {
                             String invokeName = mapMethodNameFromNode(node);
                             if (invokeName.equals("getItem") || invokeName.equals("func_77973_b")) {
                                 if (node.getNext().getOpcode() == Opcodes.IFNULL) { // if in debug
-                                    methodNode.instructions.insert(node.getNext(), addBytecode(GeneralFunctions.shouldCustomHeadBeRendered(), (LabelNode) node.getNext().getNext(), ((JumpInsnNode) node.getNext()).label));
+                                    methodNode.instructions.insert(node.getNext(), addBytecode(CommonInstructions.shouldCustomHeadBeRendered(), (LabelNode) node.getNext().getNext(), ((JumpInsnNode) node.getNext()).label));
                                     return;
                                 } else if (node.getNext().getOpcode() == Opcodes.IFNONNULL) { // if in production
                                     LabelNode oldLabel = ((JumpInsnNode)node.getNext()).label;
                                     methodNode.instructions.insert(node.getNext(), new JumpInsnNode(Opcodes.IFNULL, (LabelNode) node.getNext().getNext()));
                                     methodNode.instructions.remove(node.getNext());
-                                    methodNode.instructions.insert(node.getNext(), addBytecode(GeneralFunctions.shouldCustomHeadBeRendered(), oldLabel, null));
+                                    methodNode.instructions.insert(node.getNext(), addBytecode(CommonInstructions.shouldCustomHeadBeRendered(), oldLabel, null));
                                     return;
                                 }
                             }
@@ -61,12 +61,12 @@ public class LayerHeldItemAndCustomHeadTransformer implements ITransformer {
 
     private InsnList addBytecode(AbstractInsnNode function, LabelNode canContinueLabel, LabelNode returnLabel) {
         InsnList list = new InsnList();
-        list.add(RendererLivingEntityTransformer.isEntityPlayer());
+        list.add(CommonInstructions.isEntityRenderEntity(1));
         list.add(new JumpInsnNode(Opcodes.IFEQ, canContinueLabel));
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(GeneralFunctions.getTransitionHelper());
+        list.add(CommonInstructions.getMinecraftInstance());
+        list.add(CommonInstructions.getEntityRendererFromMCInstance());
+        list.add(CommonInstructions.getTransitionHelper());
         list.add(function);
         list.add(returnLabel == null ? new JumpInsnNode(Opcodes.IFNE, canContinueLabel) : new JumpInsnNode(Opcodes.IFEQ, returnLabel));
         return list;

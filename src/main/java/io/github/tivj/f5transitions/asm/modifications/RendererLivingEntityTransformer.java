@@ -1,14 +1,14 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.GeneralFunctions;
+import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
-import static io.github.tivj.f5transitions.asm.GeneralFunctions.getPlayerOpacity;
-import static io.github.tivj.f5transitions.asm.GeneralFunctions.isPlayerNotRenderedSolid;
+import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
+import static io.github.tivj.f5transitions.asm.CommonInstructions.getPlayerOpacity;
 
 public class RendererLivingEntityTransformer implements ITransformer {
     @Override
@@ -21,6 +21,10 @@ public class RendererLivingEntityTransformer implements ITransformer {
         for (MethodNode methodNode : classNode.methods) {
             String methodName = mapMethodName(classNode, methodNode);
             if (methodName.equals("renderModel") || methodName.equals("func_77036_a")) {
+                LocalVariableNode isEntityRenderEntity = createLocalVariable("isEntityRenderEntity", "Z", new LabelNode(), new LabelNode(), methodNode.localVariables);
+                methodNode.localVariables.add(isEntityRenderEntity);
+                methodNode.instructions.add(isEntityRenderEntity.end);
+
                 int phase = 0;
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
@@ -28,32 +32,31 @@ public class RendererLivingEntityTransformer implements ITransformer {
                     if (phase == 0 && node.getOpcode() == Opcodes.IFEQ && node.getPrevious().getOpcode() == Opcodes.ILOAD && ((VarInsnNode) node.getPrevious()).var == 9 && node.getNext().getNext().getNext().getOpcode() == Opcodes.INVOKESTATIC && node.getNext() instanceof LabelNode) { // also trigger the if statement (that makes the player opaque) if an entity is the player
                         String invokeName = mapMethodNameFromNode(node.getNext().getNext().getNext());
                         if (invokeName.equals("pushMatrix") || invokeName.equals("func_179094_E")) {
+                            methodNode.instructions.insertBefore(node.getPrevious(), isEntityRenderEntity.start);
+                            methodNode.instructions.insertBefore(node.getPrevious(), isEntityRenderEntity(1));
+                            methodNode.instructions.insertBefore(node.getPrevious(), new VarInsnNode(Opcodes.ISTORE, isEntityRenderEntity.index));
+
                             LabelNode beginningLabel = (LabelNode) node.getNext();
                             methodNode.instructions.insertBefore(node, new JumpInsnNode(Opcodes.IFNE, beginningLabel));
-                            methodNode.instructions.insertBefore(node, isEntityPlayer());
+                            methodNode.instructions.insertBefore(node, new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
                             phase++;
                         }
                     } else if (phase == 1 && node.getOpcode() == Opcodes.LDC && ((LdcInsnNode)node).cst.equals(0.15F)) { // change GlStateManager.color's alpha
                         LabelNode afterNormalValue = new LabelNode();
                         methodNode.instructions.insert(node, afterNormalValue);
-                        methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, false));
+                        methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, isEntityRenderEntity));
                         phase++;
 
                     } else if (phase == 2 && node.getOpcode() == Opcodes.INVOKESTATIC && node.getPrevious().getOpcode() == Opcodes.ICONST_0 && node.getNext() instanceof LabelNode) {// disable depth mask if needed
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("depthMask") || invokeName.equals("func_179132_a")) {
-                            methodNode.instructions.insertBefore(node.getPrevious(), shouldDisableDepthMask((LabelNode) node.getNext()));
+                            methodNode.instructions.insertBefore(node.getPrevious(), shouldDisableDepthMask((LabelNode) node.getNext(), isEntityRenderEntity));
                             phase++;
                         }
-                    } else if (phase == 3 && node.getOpcode() == Opcodes.LDC && ((LdcInsnNode)node).cst.equals(0.003921569F)) { // change GlStateManager.alphaFunc's ref, similar to phase 1
-                        LabelNode afterNormalValue = new LabelNode();
-                        methodNode.instructions.insert(node, afterNormalValue);
-                        methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, true));
-                        phase++;
-                    } else if (phase == 4 && node.getOpcode() == Opcodes.IFEQ && node.getPrevious().getOpcode() == Opcodes.ILOAD && ((VarInsnNode) node.getPrevious()).var == 9 && node.getNext() instanceof LabelNode) {
+                    } else if (phase == 3 && node.getOpcode() == Opcodes.IFEQ && node.getPrevious().getOpcode() == Opcodes.ILOAD && ((VarInsnNode) node.getPrevious()).var == 9 && node.getNext() instanceof LabelNode) {
                         LabelNode beginningLabel = (LabelNode) node.getNext();
                         methodNode.instructions.insertBefore(node, new JumpInsnNode(Opcodes.IFNE, beginningLabel));
-                        methodNode.instructions.insertBefore(node, isEntityPlayer());
+                        methodNode.instructions.insertBefore(node, new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
                         return;
                     }
                 }
@@ -61,49 +64,35 @@ public class RendererLivingEntityTransformer implements ITransformer {
         }
     }
 
-    private InsnList shouldDisableDepthMask(LabelNode afterDisabling) {
+    private InsnList shouldDisableDepthMask(LabelNode afterDisabling, LocalVariableNode isEntityRenderEntity) {
         InsnList list = new InsnList();
         LabelNode beforeDisabling = new LabelNode();
 
-        list.add(isEntityPlayer());
+        list.add(new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
         list.add(new JumpInsnNode(Opcodes.IFEQ, beforeDisabling));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(GeneralFunctions.getTransitionHelper());
-        list.add(isPlayerNotRenderedSolid());
+        list.add(getMinecraftInstance());
+        list.add(getEntityRendererFromMCInstance());
+        list.add(getTransitionHelper());
+        list.add(CommonInstructions.shouldDisableDepthMask());
         list.add(new JumpInsnNode(Opcodes.IFEQ, afterDisabling));
         list.add(beforeDisabling);
         return list;
     }
 
-    private InsnList getReplacementAlpha(LabelNode afterNormalValue, boolean divideByTen) {
+    private InsnList getReplacementAlpha(LabelNode afterNormalValue, LocalVariableNode isEntityRenderEntity) {
         InsnList list = new InsnList();
         LabelNode endOfReplacement = new LabelNode();
 
-        list.add(isEntityPlayer());
+        list.add(new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
         list.add(new JumpInsnNode(Opcodes.IFEQ, endOfReplacement));
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
-        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;")); // entityRenderer
-        list.add(GeneralFunctions.getTransitionHelper());
+        list.add(getMinecraftInstance());
+        list.add(getEntityRendererFromMCInstance());
+        list.add(getTransitionHelper());
         list.add(getPlayerOpacity());
-
-        if (divideByTen) {
-            list.add(new LdcInsnNode(10F));
-            list.add(new InsnNode(Opcodes.FDIV));
-        }
 
         list.add(new JumpInsnNode(Opcodes.GOTO, afterNormalValue));
         list.add(endOfReplacement);
-        return list;
-    }
-
-    public static InsnList isEntityPlayer() {
-        InsnList list = new InsnList();
-        list.add(new VarInsnNode(Opcodes.ALOAD, 1));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/Minecraft", "func_71410_x", "()Lnet/minecraft/client/Minecraft;", false)); // getMinecraft
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "net/minecraft/client/Minecraft", "func_175606_aa", "()Lnet/minecraft/entity/Entity;", false)); // getRenderViewEntity
-        list.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Object", "equals", "(Ljava/lang/Object;)Z", false));
         return list;
     }
 }
