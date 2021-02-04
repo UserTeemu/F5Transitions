@@ -17,10 +17,6 @@ public class CommonInstructions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "getYRotationBonus", "(F)F", false);
     }
 
-    public static AbstractInsnNode shouldCustomHeadBeRendered() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldRenderCustomHead", "()Z", false);
-    }
-
     public static AbstractInsnNode shouldHeldItemBeRenderedInThirdPerson() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldItemBeRenderedInThirdPerson", "()Z", false);
     }

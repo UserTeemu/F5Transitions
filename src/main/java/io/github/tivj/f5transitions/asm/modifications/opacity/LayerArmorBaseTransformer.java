@@ -34,7 +34,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
                     } else if (node.getOpcode() == Opcodes.INVOKEVIRTUAL && node.getPrevious().getPrevious().getOpcode() == Opcodes.ALOAD && ((VarInsnNode)node.getPrevious().getPrevious()).var == 11) {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("getColor") || invokeName.equals("func_177182_a")) {
-                            methodNode.instructions.insertBefore(node.getPrevious().getPrevious(), beforeRender(isEntityRenderEntity));
+                            methodNode.instructions.insertBefore(node.getPrevious().getPrevious(), beforeRender(isEntityRenderEntity, true));
                             i = methodNode.instructions.indexOf(node);
                         }
                     } else if (node.getOpcode() == Opcodes.IFNE && node.getPrevious().getOpcode() == Opcodes.GETFIELD && node.getNext().getNext().getNext().getOpcode() == Opcodes.IFEQ) {
@@ -49,7 +49,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
                     } else if (node.getOpcode() == Opcodes.INVOKESPECIAL && node.getNext() instanceof LabelNode) {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("renderGlint") || invokeName.equals("func_177183_a")) {
-                            methodNode.instructions.insert(node, afterRender(isEntityRenderEntity, (LabelNode) node.getNext()));
+                            methodNode.instructions.insert(node, afterRender(isEntityRenderEntity, (LabelNode) node.getNext(), true));
                             methodNode.instructions.insert(node, endOfRendering);
                             return;
                         }
@@ -59,7 +59,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
         }
     }
 
-    private InsnList getAlpha(LocalVariableNode isEntityRenderEntity, LabelNode end) {
+    public static InsnList getAlpha(LocalVariableNode isEntityRenderEntity, LabelNode end) {
         InsnList list = new InsnList();
         LabelNode realAlpha = new LabelNode();
 
@@ -76,7 +76,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList beforeRender(LocalVariableNode isEntityRenderEntity) {
+    public static InsnList beforeRender(LocalVariableNode isEntityRenderEntity, boolean pushMatrix) {
         InsnList list = new InsnList();
         list.add(isEntityRenderEntity.start);
         list.add(CommonInstructions.isEntityRenderEntity(1));
@@ -86,7 +86,9 @@ public class LayerArmorBaseTransformer implements ITransformer {
         LabelNode end = new LabelNode();
         list.add(new JumpInsnNode(Opcodes.IFEQ, end));
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "pushMatrix", "()V", false));
+        if (pushMatrix) {
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "pushMatrix", "()V", false));
+        }
 
         LabelNode afterDepthMaskDisabled = new LabelNode();
         list.add(CommonInstructions.getMinecraftInstance());
@@ -108,7 +110,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
         return list;
     }
 
-    private InsnList afterRender(LocalVariableNode isEntityRenderEntity, LabelNode end) {
+    public static InsnList afterRender(LocalVariableNode isEntityRenderEntity, LabelNode end, boolean popMatrix) {
         InsnList list = new InsnList();
 
         list.add(new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
@@ -123,7 +125,9 @@ public class LayerArmorBaseTransformer implements ITransformer {
         list.add(new InsnNode(Opcodes.ICONST_1));
         list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "depthMask", "(Z)V", false));
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "popMatrix", "()V", false));
+        if (popMatrix) {
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "popMatrix", "()V", false));
+        }
 
         list.add(isEntityRenderEntity.end);
         return list;

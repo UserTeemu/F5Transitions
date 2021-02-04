@@ -68,14 +68,6 @@ public class TransitionsConfig extends Vigilant {
     public static float thirdPersonItemHide = 0.4F;
 
     @Property(
-            type = PropertyType.PERCENT_SLIDER,
-            name = "Worn head invisibility point",
-            description = "When going to 1st person view, the lowest player opacity value when a head worn by the player will not be rendered",
-            category = "Animation", subcategory = "Animation details - Probably not wise to change unless you need to"
-    )
-    public static float customHeadHide = 0.6F;
-
-    @Property(
             type = PropertyType.SWITCH,
             name = "Change blocks that camera can collide with",
             category = "Collisions", subcategory = "Master toggle"

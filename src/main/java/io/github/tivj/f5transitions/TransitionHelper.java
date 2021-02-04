@@ -122,13 +122,6 @@ public class TransitionHelper {
     }
 
     @SuppressWarnings("unused") // used in asm
-    public boolean shouldRenderCustomHead() {
-        if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
-            return this.getPlayerOpacity() > TransitionsConfig.customHeadHide;
-        } else return true;
-    }
-
-    @SuppressWarnings("unused") // used in asm
     public boolean shouldItemBeRenderedInThirdPerson() {
         if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
             return this.getPlayerOpacity() > TransitionsConfig.thirdPersonItemHide;

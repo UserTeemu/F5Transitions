@@ -1,4 +1,4 @@
-package io.github.tivj.f5transitions.asm.modifications;
+package io.github.tivj.f5transitions.asm.modifications.opacity;
 
 import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
