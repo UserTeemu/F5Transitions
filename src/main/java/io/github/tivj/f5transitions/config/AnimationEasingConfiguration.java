@@ -26,7 +26,6 @@ public class AnimationEasingConfiguration {
             while (matcher.find()) {
                 out = out.substring(0, matcher.start()) + matcher.group("space").toUpperCase() + out.substring(matcher.start() + 2);
             }
-            System.out.println(out);
 
             animationEasingNames[i] = out;
         }
@@ -76,6 +75,9 @@ public class AnimationEasingConfiguration {
                             "What each easing does can be seen at https://easings.net/",
                             0,
                             0,
+                            0F,
+                            0F,
+                            1,
                             Arrays.asList(animationEasingNames),
                             true,
                             "",

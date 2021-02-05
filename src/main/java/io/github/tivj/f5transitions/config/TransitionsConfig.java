@@ -15,14 +15,13 @@ public class TransitionsConfig extends Vigilant {
         AnimationEasingConfiguration.setupAnimationEasingProperties(this);
     }
 
-    /* todo extract from comment once decimal sliders come
     @Property(
             type = PropertyType.DECIMAL_SLIDER,
             name = "Animation length",
             description = "in client ticks",
-            maxF = 30000, decimalPlaces = 3,
+            maxF = 1000, decimalPlaces = 3,
             category = "Animation", subcategory = "Animation"
-    )*/
+    )
     public static float maxPerpectiveTimer = 16F;
 
     @Property(

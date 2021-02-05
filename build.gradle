@@ -41,7 +41,7 @@ repositories {
 
 dependencies {
     compile "net.modcore:Loader:2.0.0"
-    provided("net.modcore:ModCore:714-10809-SNAPSHOT") {
+    provided("net.modcore:ModCore:732-10809-SNAPSHOT") {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
