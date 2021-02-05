@@ -4,10 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.asm.modifications.*;
-import io.github.tivj.f5transitions.asm.modifications.opacity.LayerArmorBaseTransformer;
-import io.github.tivj.f5transitions.asm.modifications.opacity.LayerCustomHeadTransformer;
-import io.github.tivj.f5transitions.asm.modifications.opacity.LayerHeldItemTransformer;
-import io.github.tivj.f5transitions.asm.modifications.opacity.RendererLivingEntityTransformer;
+import io.github.tivj.f5transitions.asm.modifications.opacity.*;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.apache.logging.log4j.Logger;
@@ -37,6 +34,8 @@ public class ClassTransformer implements IClassTransformer {
         registerTransformer(new ItemRendererTransformer());
         registerTransformer(new LayerArmorBaseTransformer());
         registerTransformer(new LayerCustomHeadTransformer());
+        registerTransformer(new LayerCapeTransformer());
+        registerTransformer(new LayerDeadmau5HeadTransformer());
 
         registerTransformer(new BlockAABBProviderTransformer.BlockTransformer());
         registerTransformer(new BlockAABBProviderTransformer.BlockStairsTransformer());

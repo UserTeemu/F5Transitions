@@ -8,10 +8,10 @@ import java.util.ListIterator;
 
 import static io.github.tivj.f5transitions.asm.modifications.opacity.OpacityInstructions.*;
 
-public class LayerCustomHeadTransformer implements ITransformer {
+public class LayerCapeTransformer implements ITransformer {
     @Override
     public String[] getClassName() {
-        return new String[]{"net.minecraft.client.renderer.entity.layers.LayerCustomHead"};
+        return new String[]{"net.minecraft.client.renderer.entity.layers.LayerCape"};
     }
 
     @Override
@@ -28,6 +28,10 @@ public class LayerCustomHeadTransformer implements ITransformer {
                     if (node.getOpcode() == Opcodes.FCONST_1 && node.getNext().getOpcode() == Opcodes.INVOKESTATIC) {
                         String invokeName = mapMethodNameFromNode(node.getNext());
                         if (invokeName.equals("color") || invokeName.equals("func_179124_c")) {
+                            // before render
+                            methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious(), beforeRender(isEntityRenderEntity, false, false));
+
+                            // change color alpha
                             LabelNode end = new LabelNode();
                             methodNode.instructions.insertBefore(node, getAlpha(isEntityRenderEntity, end));
                             methodNode.instructions.insert(node, end);
@@ -35,21 +39,7 @@ public class LayerCustomHeadTransformer implements ITransformer {
                     }
                 }
 
-                iterator = methodNode.instructions.iterator();
-                while (iterator.hasNext()) {
-                    AbstractInsnNode node = iterator.next();
-                    if (node.getOpcode() == Opcodes.INVOKESTATIC) {
-                        String invokeName = mapMethodNameFromNode(node);
-                        if (invokeName.equals("pushMatrix") || invokeName.equals("func_179094_E")) {
-                            methodNode.instructions.insert(node, beforeRender(isEntityRenderEntity, false, false));
-                            break;
-                        }
-                    }
-                }
-
-                iterator = methodNode.instructions.iterator();
-                while (iterator.hasNext()) {
-                    AbstractInsnNode node = iterator.next();
+                for (AbstractInsnNode node = methodNode.instructions.getLast(); node.getPrevious() != null; node = node.getPrevious()) {
                     if (node.getOpcode() == Opcodes.INVOKESTATIC) {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("popMatrix") || invokeName.equals("func_179121_F")) {

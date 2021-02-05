@@ -8,7 +8,6 @@ import org.objectweb.asm.tree.*;
 import java.util.ListIterator;
 
 import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
-import static io.github.tivj.f5transitions.asm.CommonInstructions.getPlayerOpacity;
 
 public class RendererLivingEntityTransformer implements ITransformer {
     @Override
