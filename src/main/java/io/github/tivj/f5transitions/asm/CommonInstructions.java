@@ -21,6 +21,10 @@ public class CommonInstructions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldItemBeRenderedInThirdPerson", "()Z", false);
     }
 
+    public static AbstractInsnNode shouldRenderArrowLayer() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldRenderArrowLayer", "()Z", false);
+    }
+
     public static AbstractInsnNode beforePerspectiveChanges() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "beforePerspectiveChanged", "()V", false);
     }
@@ -41,10 +45,6 @@ public class CommonInstructions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "isTransitionActive", "()Z", false);
     }
 
-    public static AbstractInsnNode getTransitionHelper() {
-        return new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc);
-    }
-
     public static InsnList isEntityRenderEntity(int indexOfEntityVariable) {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, indexOfEntityVariable));
@@ -60,5 +60,9 @@ public class CommonInstructions {
 
     public static AbstractInsnNode getEntityRendererFromMCInstance() {
         return new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71460_t", "Lnet/minecraft/client/renderer/EntityRenderer;"); // entityRenderer
+    }
+
+    public static AbstractInsnNode getTransitionHelper() {
+        return new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/renderer/EntityRenderer", EntityRendererTransformer.transitionHelper.name, EntityRendererTransformer.transitionHelper.desc);
     }
 }

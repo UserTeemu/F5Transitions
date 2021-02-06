@@ -127,4 +127,9 @@ public class TransitionHelper {
             return this.getPlayerOpacity() > TransitionsConfig.thirdPersonItemHide;
         } else return true;
     }
+
+    @SuppressWarnings("unused") // used in asm
+    public boolean shouldRenderArrowLayer() {
+        return this.getPlayerOpacity() > TransitionsConfig.arrowLayerHide;
+    }
 }

@@ -31,6 +31,7 @@ public class ClassTransformer implements IClassTransformer {
         registerTransformer(new LayerCustomHeadTransformer());
         registerTransformer(new LayerCapeTransformer());
         registerTransformer(new LayerDeadmau5HeadTransformer());
+        registerTransformer(new LayerArrowTransformer());
 
         // block aabb provider transformers
         registerTransformer(new BlockAABBProviderTransformer.BlockTransformer());

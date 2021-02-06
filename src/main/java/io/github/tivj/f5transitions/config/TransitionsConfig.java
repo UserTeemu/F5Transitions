@@ -67,6 +67,14 @@ public class TransitionsConfig extends Vigilant {
     public static float thirdPersonItemHide = 0.4F;
 
     @Property(
+            type = PropertyType.PERCENT_SLIDER,
+            name = "Arrows on player invisibility point",
+            description = "When going to 1st person view, the lowest player opacity value when arrows on the player can be seen",
+            category = "Animation", subcategory = "Animation details - Probably not wise to change unless you need to"
+    )
+    public static float arrowLayerHide = 0.18F;
+
+    @Property(
             type = PropertyType.SWITCH,
             name = "Change blocks that camera can collide with",
             category = "Collisions", subcategory = "Master toggle"
