@@ -48,7 +48,7 @@ public class LayerArmorBaseTransformer implements ITransformer {
                     } else if (node.getOpcode() == Opcodes.INVOKESPECIAL && node.getNext() instanceof LabelNode) {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("renderGlint") || invokeName.equals("func_177183_a")) {
-                            methodNode.instructions.insert(node, OpacityInstructions.afterRender(isEntityRenderEntity, (LabelNode) node.getNext(), true, false));
+                            methodNode.instructions.insert(node, OpacityInstructions.afterRender(isEntityRenderEntity, (LabelNode) node.getNext(), true));
                             methodNode.instructions.insert(node, endOfRendering);
                             return;
                         }

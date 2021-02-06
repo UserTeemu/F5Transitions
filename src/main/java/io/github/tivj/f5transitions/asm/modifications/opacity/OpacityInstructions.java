@@ -50,7 +50,7 @@ public class OpacityInstructions {
         return list;
     }
 
-    public static InsnList afterRender(LocalVariableNode isEntityRenderEntity, LabelNode end, boolean popMatrix, boolean setColor) {
+    public static InsnList afterRender(LocalVariableNode isEntityRenderEntity, LabelNode end, boolean popMatrix) {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ILOAD, isEntityRenderEntity.index));
         list.add(new JumpInsnNode(Opcodes.IFEQ, end));
@@ -63,14 +63,6 @@ public class OpacityInstructions {
 
         list.add(new InsnNode(Opcodes.ICONST_1));
         list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "depthMask", "(Z)V", false));
-
-        if (setColor) {
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new MethodInsnNode(scala.tools.asm.Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "color", "(FFFF)V", false));
-        }
 
         if (popMatrix) {
             list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "popMatrix", "()V", false));

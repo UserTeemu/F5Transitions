@@ -40,7 +40,7 @@ public class LayerDeadmau5HeadTransformer implements ITransformer {
                         ((JumpInsnNode) node).label = newEndLabel;
                     } else if (originalEndLabel.equals(node)) {
                         methodNode.instructions.insertBefore(node, newEndLabel);
-                        methodNode.instructions.insertBefore(node, afterRender(isEntityRenderEntity, originalEndLabel,true, true));
+                        methodNode.instructions.insertBefore(node, afterRender(isEntityRenderEntity, originalEndLabel,true));
                         break;
                     }
                 }

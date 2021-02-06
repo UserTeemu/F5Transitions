@@ -44,7 +44,7 @@ public class LayerCapeTransformer implements ITransformer {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("popMatrix") || invokeName.equals("func_179121_F")) {
                             LabelNode end = new LabelNode();
-                            methodNode.instructions.insertBefore(node, afterRender(isEntityRenderEntity, end, false, false));
+                            methodNode.instructions.insertBefore(node, afterRender(isEntityRenderEntity, end, false));
                             methodNode.instructions.insertBefore(node, end);
                             break;
                         }
