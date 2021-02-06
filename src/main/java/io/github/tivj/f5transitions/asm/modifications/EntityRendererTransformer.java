@@ -175,8 +175,7 @@ public class EntityRendererTransformer implements ITransformer {
                     ) {
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("rayTraceBlocks") || invokeName.equals("func_72933_a")) {
-                            methodNode.instructions.insertBefore(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/tivj/f5transitions/utils/RaytracingUtil", "rayTraceBlocks", "(Lnet/minecraft/world/World;Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;", false));
-                            methodNode.instructions.remove(node);
+                            methodNode.instructions.set(node, new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/tivj/f5transitions/utils/RaytracingUtil", "rayTraceBlocks", "(Lnet/minecraft/world/World;Lnet/minecraft/util/Vec3;Lnet/minecraft/util/Vec3;)Lnet/minecraft/util/MovingObjectPosition;", false));
                             break;
                         }
                     }

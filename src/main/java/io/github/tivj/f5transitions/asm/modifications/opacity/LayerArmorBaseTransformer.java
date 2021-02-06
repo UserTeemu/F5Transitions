@@ -39,11 +39,8 @@ public class LayerArmorBaseTransformer implements ITransformer {
                     } else if (node.getOpcode() == Opcodes.IFNE && node.getPrevious().getOpcode() == Opcodes.GETFIELD && node.getNext().getNext().getNext().getOpcode() == Opcodes.IFEQ) {
                         String fieldName = mapFieldNameFromNode(node.getPrevious());
                         if (fieldName.equals("skipRenderGlint") || fieldName.equals("field_177193_i")) {
-                            methodNode.instructions.insert(node.getNext().getNext().getNext(), new JumpInsnNode(Opcodes.IFEQ, endOfRendering));
-                            methodNode.instructions.remove(node.getNext().getNext().getNext());
-
-                            methodNode.instructions.insert(node, new JumpInsnNode(Opcodes.IFNE, endOfRendering));
-                            methodNode.instructions.remove(node);
+                            methodNode.instructions.set(node.getNext().getNext().getNext(), new JumpInsnNode(Opcodes.IFEQ, endOfRendering));
+                            methodNode.instructions.set(node, new JumpInsnNode(Opcodes.IFNE, endOfRendering));
                         }
                     } else if (node.getOpcode() == Opcodes.INVOKESPECIAL && node.getNext() instanceof LabelNode) {
                         String invokeName = mapMethodNameFromNode(node);
