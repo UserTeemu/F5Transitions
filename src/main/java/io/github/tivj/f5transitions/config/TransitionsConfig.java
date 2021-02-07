@@ -83,6 +83,14 @@ public class TransitionsConfig extends Vigilant {
 
     @Property(
             type = PropertyType.SWITCH,
+            name = "Grass and plants that are not separately mentioned",
+            description = "Grass, 2 blocks high plants, flowers, mushrooms, saplings",
+            category = "Collisions", subcategory = "Camera can go through..."
+    )
+    public static boolean cameraCanGoThroughGrassAndPlants = false;
+
+    @Property(
+            type = PropertyType.SWITCH,
             name = "Cobwebs",
             category = "Collisions", subcategory = "Camera can go through..."
     )
@@ -104,7 +112,7 @@ public class TransitionsConfig extends Vigilant {
 
     @Property(
             type = PropertyType.SWITCH,
-            name = "Crops",
+            name = "Crops and nether wart",
             category = "Collisions", subcategory = "Camera can go through..."
     )
     public static boolean cameraCanGoThroughCrops = false;
@@ -129,6 +137,20 @@ public class TransitionsConfig extends Vigilant {
             category = "Collisions", subcategory = "Camera can go through..."
     )
     public static boolean cameraCanGoThroughSugarCanes = false;
+
+    @Property(
+            type = PropertyType.SWITCH,
+            name = "Lily pads",
+            category = "Collisions", subcategory = "Camera can go through..."
+    )
+    public static boolean cameraCanGoThroughLilyPads = false;
+
+    @Property(
+            type = PropertyType.SWITCH,
+            name = "Dead bushes",
+            category = "Collisions", subcategory = "Camera can go through..."
+    )
+    public static boolean cameraCanGoThroughDeadBushes = false;
 
     @Property(
             type = PropertyType.SWITCH,
@@ -180,14 +202,24 @@ public class TransitionsConfig extends Vigilant {
     public static boolean cameraCanGoThroughGlass = false;
 
     public static boolean cameraCanGoThroughBlock(Block block) {
-        if (!changeCollidableBlocks)                                  return false;
+        if (!changeCollidableBlocks) return false;
+        if (cameraCanGoThroughGrassAndPlants && (
+                block instanceof BlockTallGrass ||
+                block instanceof BlockDoublePlant ||
+                block instanceof BlockFlower ||
+                block instanceof BlockSapling ||
+                block instanceof BlockMushroom
+        )) return true;
+
+        if (cameraCanGoThroughCrops          && block instanceof BlockCrops || block instanceof BlockNetherWart) return true;
         if (cameraCanGoThroughCobwebs        && block instanceof BlockWeb)          return true;
         if (cameraCanGoThroughStrings        && block instanceof BlockTripWire)     return true;
         if (cameraCanGoThroughPortals        && block instanceof BlockPortal)       return true;
-        if (cameraCanGoThroughCrops          && block instanceof BlockCrops)        return true;
         if (cameraCanGoThroughVines          && block instanceof BlockVine)         return true;
         if (cameraCanGoThroughStems          && block instanceof BlockStem)         return true;
         if (cameraCanGoThroughSugarCanes     && block instanceof BlockReed)         return true;
+        if (cameraCanGoThroughLilyPads       && block instanceof BlockLilyPad)      return true;
+        if (cameraCanGoThroughDeadBushes     && block instanceof BlockDeadBush)     return true;
         if (cameraCanGoThroughBanners        && block instanceof BlockBanner)       return true;
         if (cameraCanGoThroughTorches        && block instanceof BlockTorch)        return true;
         if (cameraCanGoThroughRedstoneDust   && block instanceof BlockRedstoneWire) return true;
