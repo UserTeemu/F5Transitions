@@ -9,10 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-/**
- * I want to apologize for really bad looking code, IDK how to make it efficient and pretty at the same time. I chose efficiency.
- * For more human readable information of what this does, see ASM explainations/EntityRendererTransformer.md
- */
 public class EntityRendererTransformer implements ITransformer {
     public static FieldNode transitionHelper = new FieldNode(Opcodes.ACC_PUBLIC, "perspectiveTransitionHelper", "Lio/github/tivj/f5transitions/TransitionHelper;", null, null);
 
