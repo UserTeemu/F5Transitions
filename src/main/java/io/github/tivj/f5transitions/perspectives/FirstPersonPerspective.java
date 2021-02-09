@@ -5,12 +5,12 @@ import io.github.tivj.f5transitions.TransitionPhase;
 import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 
-import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.OPACITY;
+import static io.github.tivj.f5transitions.config.EaseProperty.OPACITY;
 
 public class FirstPersonPerspective implements Perspective {
     @Override
     public float getCameraYRotation(TransitionPhase transitionPhase) {
-        if (TransitionsConfig.sameCameraRotationDirection && transitionPhase == TransitionPhase.TO) return TransitionsConfig.rotateCameraClockwise ? 360F : -360F;
+        if (TransitionsConfig.INSTANCE.getSameCameraRotationDirection() && transitionPhase == TransitionPhase.TO) return TransitionsConfig.INSTANCE.getRotateCameraClockwise() ? 360F : -360F;
         else return 0F;
     }
 

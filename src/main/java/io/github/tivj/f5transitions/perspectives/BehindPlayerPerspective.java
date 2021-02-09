@@ -2,7 +2,7 @@ package io.github.tivj.f5transitions.perspectives;
 
 import io.github.tivj.f5transitions.TransitionPhase;
 
-import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.OPACITY;
+import static io.github.tivj.f5transitions.config.EaseProperty.OPACITY;
 
 public class BehindPlayerPerspective implements Perspective {
     @Override

@@ -1,6 +1,7 @@
 package io.github.tivj.f5transitions.utils;
 
 import io.github.tivj.f5transitions.asm.BlockPlaceholder;
+import io.github.tivj.f5transitions.config.CameraCollisionException;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
@@ -10,6 +11,7 @@ import net.minecraft.world.World;
 import java.util.HashSet;
 import java.util.Set;
 
+@SuppressWarnings("unused") // used in ASM
 public class RaytracingUtil {
     /**
      * Based on net.minecraft.world.World#rayTraceBlocks
@@ -36,7 +38,7 @@ public class RaytracingUtil {
                 Vec3 relativeStartVec = vec3.addVector(-blockPos.getX(), -blockPos.getY(), -blockPos.getZ());
 
                 block.setBlockBoundsBasedOnState(world, blockPos);
-                if (block.canCollideCheck(blockState, false) && !TransitionsConfig.cameraCanGoThroughBlock(block)) {
+                if (block.canCollideCheck(blockState, false) && !CameraCollisionException.Companion.cameraCanGoThroughBlock(block)) {
                     Set<AxisAlignedBB> boundingBoxes = new HashSet<>();
                     BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing(block, world, blockPos, blockState, boundingBoxes);
 
@@ -145,7 +147,7 @@ public class RaytracingUtil {
             IBlockState iterationBlockState = world.getBlockState(iterationBlockPos);
             Block iterationBlock = iterationBlockState.getBlock();
 
-            if (!iterationBlock.canCollideCheck(iterationBlockState, false) || TransitionsConfig.cameraCanGoThroughBlock(iterationBlock)) continue;
+            if (!iterationBlock.canCollideCheck(iterationBlockState, false) || CameraCollisionException.Companion.cameraCanGoThroughBlock(iterationBlock)) continue;
 
             Set<AxisAlignedBB> boundingBoxes = new HashSet<>();
             BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing(iterationBlock, world, iterationBlockPos, iterationBlockState, boundingBoxes);
@@ -157,7 +159,7 @@ public class RaytracingUtil {
             }
 
             for (AxisAlignedBB aabb : boundingBoxes) {
-                aabb = aabb.offset(iterationBlockPos.getX() - centralPos.getX(), iterationBlockPos.getY() - centralPos.getY(), iterationBlockPos.getZ() - centralPos.getZ()).expand(0.1D, 0.1D, 0.1D);
+                aabb = expandAABB(aabb).offset(iterationBlockPos.getX() - centralPos.getX(), iterationBlockPos.getY() - centralPos.getY(), iterationBlockPos.getZ() - centralPos.getZ());
                 Vec3 currentRaytracingResult = raytraceAABB(aabb, start, directionVec);
 
                 if (raytracingResult == null || (currentRaytracingResult != null && currentRaytracingResult.distanceTo(start) < raytracingResult.distanceTo(start))) {

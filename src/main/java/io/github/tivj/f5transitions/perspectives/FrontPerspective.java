@@ -6,7 +6,7 @@ import io.github.tivj.f5transitions.config.TransitionsConfig;
 public class FrontPerspective implements Perspective {
     @Override
     public float getCameraYRotation(TransitionPhase transitionPhase) {
-        return TransitionsConfig.rotateCameraClockwise ? 180F : -180F;
+        return TransitionsConfig.INSTANCE.getRotateCameraClockwise() ? 180F : -180F;
     }
 
     @Override

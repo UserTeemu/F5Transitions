@@ -12,7 +12,7 @@ import net.minecraft.util.MathHelper;
 import java.util.HashSet;
 
 import static io.github.tivj.f5transitions.TransitionPhase.FROM;
-import static io.github.tivj.f5transitions.config.AnimationEasingConfiguration.EaseUse.*;
+import static io.github.tivj.f5transitions.config.EaseProperty.*;
 
 public class TransitionHelper {
     private static final HashSet<Perspective> perspectives = new HashSet<>();
@@ -61,7 +61,7 @@ public class TransitionHelper {
             this.progressOfMax = 0F;
         } else {
             this.from = null;
-            this.progress = TransitionsConfig.maxPerpectiveTimer;
+            this.progress = TransitionsConfig.INSTANCE.getMaxPerpectiveTimer();
             this.progressOfMax = 1F;
         }
 
@@ -73,12 +73,12 @@ public class TransitionHelper {
     public void updatePerspectiveTimer() {
         if (transitionActive) {
             progress++;
-            if (progress >= TransitionsConfig.maxPerpectiveTimer + 1F) {
+            if (progress >= TransitionsConfig.INSTANCE.getMaxPerpectiveTimer() + 1F) {
                 transitionActive = false;
-                progress = TransitionsConfig.maxPerpectiveTimer;
+                progress = TransitionsConfig.INSTANCE.getMaxPerpectiveTimer();
                 progressOfMax = 1F;
             } else {
-                progressOfMax = progress / TransitionsConfig.maxPerpectiveTimer;
+                progressOfMax = progress / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer();
             }
             this.mc.renderGlobal.setDisplayListEntitiesDirty();
         }
@@ -90,14 +90,14 @@ public class TransitionHelper {
         if (from == null || !transitionActive) return toCameraDistance;
         else {
             float fromCameraDistance = from.getCameraDistance(this.entityRenderer.thirdPersonDistance);
-            return fromCameraDistance + (DISTANCE.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.maxPerpectiveTimer, 0F, 1F)) * (toCameraDistance - fromCameraDistance));
+            return fromCameraDistance + (DISTANCE.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer(), 0F, 1F)) * (toCameraDistance - fromCameraDistance));
         }
     }
 
     @SuppressWarnings("unused") // used in asm
     public float getYRotationBonus(float partialTicks) {
         if (from == null || !transitionActive) return to.getCameraYRotation(TransitionPhase.NO_TRANSITION);
-        else return from.getCameraYRotation(FROM) + (ROTATION.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.maxPerpectiveTimer, 0F, 1F)) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
+        else return from.getCameraYRotation(FROM) + (ROTATION.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer(), 0F, 1F)) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -108,7 +108,7 @@ public class TransitionHelper {
 
     @SuppressWarnings("unused") // used in asm
     public boolean shouldDisableDepthMask() {
-        return this.getPlayerOpacity() < TransitionsConfig.playerSolidnessPoint;
+        return this.getPlayerOpacity() < TransitionsConfig.INSTANCE.getPlayerSolidnessPoint();
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -124,12 +124,12 @@ public class TransitionHelper {
     @SuppressWarnings("unused") // used in asm
     public boolean shouldItemBeRenderedInThirdPerson() {
         if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
-            return this.getPlayerOpacity() > TransitionsConfig.thirdPersonItemHide;
+            return this.getPlayerOpacity() > TransitionsConfig.INSTANCE.getThirdPersonItemHidePoint();
         } else return true;
     }
 
     @SuppressWarnings("unused") // used in asm
     public boolean shouldRenderArrowLayer() {
-        return this.getPlayerOpacity() > TransitionsConfig.arrowLayerHide;
+        return this.getPlayerOpacity() > TransitionsConfig.INSTANCE.getArrowLayerHidePoint();
     }
 }
