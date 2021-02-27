@@ -11,23 +11,17 @@ import net.minecraft.util.MathHelper;
 
 import java.util.HashSet;
 
-import static io.github.tivj.f5transitions.TransitionPhase.FROM;
 import static io.github.tivj.f5transitions.config.EaseProperty.*;
 
 public class TransitionHelper {
-    private static final HashSet<Perspective> perspectives = new HashSet<>();
-
-    private static void initPerspectives() {
-        perspectives.add(new FirstPersonPerspective());
-        perspectives.add(new BehindPlayerPerspective());
-        perspectives.add(new FrontPerspective());
-    }
+    public boolean transitionActive = false;
+    public float progress = 0F;
+    public float progressOfMax = 0F;
 
     public Perspective from;
     public Perspective to;
-    public float progress = 0F;
-    public float progressOfMax = 0F;
-    public boolean transitionActive = false;
+    private float fromYRotation; // holds a pre-calculated y rotation value to use in transitions
+    private float toYRotation; // holds a pre-calculated y rotation value to use in transitions
 
     private final Minecraft mc;
     private final EntityRenderer entityRenderer;
@@ -35,18 +29,14 @@ public class TransitionHelper {
     public TransitionHelper(EntityRenderer entityRenderer, Minecraft mc) {
         this.entityRenderer = entityRenderer;
         this.mc = mc;
-        if (perspectives.size() == 0) initPerspectives();
         this.to = getPerspectiveFromID(mc.gameSettings.thirdPersonView);
-
         DebuggingGateway.transition = this;
     }
 
+    private static final Perspective[] perspectives = new Perspective[]{new FirstPersonPerspective(), new BehindPlayerPerspective(), new FrontPerspective()};
     public static Perspective getPerspectiveFromID(int id) {
         if (id > 2 || id < 0) id = 0;
-        for (Perspective perspective : perspectives) {
-            if (perspective.getID() == id) return perspective;
-        }
-        throw new IllegalStateException("Perspectives have not been initialized correctly! ID "+id+" was not found!");
+        return perspectives[id];
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -59,6 +49,7 @@ public class TransitionHelper {
             this.from = this.to;
             this.progress = 0F;
             this.progressOfMax = 0F;
+            calculateYRotations(this.from, to);
         } else {
             this.from = null;
             this.progress = TransitionsConfig.INSTANCE.getMaxPerpectiveTimer();
@@ -67,6 +58,28 @@ public class TransitionHelper {
 
         this.transitionActive = transitionToPerspective;
         this.to = to;
+    }
+
+    private void calculateYRotations(Perspective from, Perspective to) {
+        this.toYRotation = to.getCameraYRotation() * (TransitionsConfig.INSTANCE.getRotateCameraClockwise() ? -1F : 1F);
+        this.fromYRotation = from.getCameraYRotation() * (TransitionsConfig.INSTANCE.getRotateCameraClockwise() ? -1F : 1F);
+        if (TransitionsConfig.INSTANCE.getSameCameraRotationDirection()) {
+            if (TransitionsConfig.INSTANCE.getRotateCameraClockwise()) {
+                this.toYRotation += 360F;
+                while (this.toYRotation - this.fromYRotation >= 360F) {
+                    this.toYRotation -= 360F;
+                }
+            } else {
+                this.toYRotation -= 360F;
+                while (this.toYRotation - this.fromYRotation <= -360F) {
+                    this.toYRotation += 360F;
+                }
+            }
+        }
+    }
+
+    private float getProgressOfMaxWithPartialTicks(float partialTicks) {
+        return MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer(), 0F, 1F);
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -90,20 +103,22 @@ public class TransitionHelper {
         if (from == null || !transitionActive) return toCameraDistance;
         else {
             float fromCameraDistance = from.getCameraDistance(this.entityRenderer.thirdPersonDistance);
-            return fromCameraDistance + (DISTANCE.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer(), 0F, 1F)) * (toCameraDistance - fromCameraDistance));
+            return fromCameraDistance + (DISTANCE.getValue(getProgressOfMaxWithPartialTicks(partialTicks)) * (toCameraDistance - fromCameraDistance));
         }
     }
 
     @SuppressWarnings("unused") // used in asm
     public float getYRotationBonus(float partialTicks) {
-        if (from == null || !transitionActive) return to.getCameraYRotation(TransitionPhase.NO_TRANSITION);
-        else return from.getCameraYRotation(FROM) + (ROTATION.getValue(MathHelper.clamp_float((progress + partialTicks) / TransitionsConfig.INSTANCE.getMaxPerpectiveTimer(), 0F, 1F)) * (to.getCameraYRotation(TransitionPhase.TO) - from.getCameraYRotation(FROM)));
+        if (from == null || !transitionActive) return this.to.getCameraYRotation();
+        else {
+            return fromYRotation + (ROTATION.getValue(getProgressOfMaxWithPartialTicks(partialTicks)) * (toYRotation - fromYRotation));
+        }
     }
 
     @SuppressWarnings("unused") // used in asm
     public float getPlayerOpacity() {
-        if (from == null || !transitionActive) return 1F;
-        else return this.to.getPlayerOpacity(progressOfMax);
+        if (from == null || !transitionActive) return this.to.getPlayerOpacity();
+        else return this.from.getPlayerOpacity() + OPACITY.getValue(progressOfMax) * (this.to.getPlayerOpacity() - this.from.getPlayerOpacity());
     }
 
     @SuppressWarnings("unused") // used in asm
@@ -126,6 +141,15 @@ public class TransitionHelper {
         if (this.to instanceof FirstPersonPerspective && this.from instanceof FrontPerspective) {
             return this.getPlayerOpacity() > TransitionsConfig.INSTANCE.getThirdPersonItemHidePoint();
         } else return true;
+    }
+
+    @SuppressWarnings("unused") // used in asm
+    public boolean shouldRenderFirstPersonHand() {
+        if (this.to instanceof FirstPersonPerspective) {
+            if (this.from instanceof BehindPlayerPerspective) return !transitionActive;
+            else return true;
+        }
+        return false;
     }
 
     @SuppressWarnings("unused") // used in asm

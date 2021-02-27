@@ -226,6 +226,28 @@ public class EntityRendererTransformer implements ITransformer {
                         }
                     }
                 }
+            } else if (methodName.equals("renderHand") || methodName.equals("func_78476_b")) {
+                ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
+                while (iterator.hasNext()) {
+                    AbstractInsnNode node = iterator.next();
+                    if (node.getOpcode() == Opcodes.GETFIELD && node.getNext().getOpcode() == Opcodes.IFNE) {
+                        String fieldName = mapFieldNameFromNode(node);
+                        if (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) {
+                            if (node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.ISTORE && ((VarInsnNode)node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getPrevious()).var == 4) {
+                                methodNode.instructions.insert(node.getNext(), new JumpInsnNode(Opcodes.IFEQ, ((JumpInsnNode)node.getNext()).label));
+                                methodNode.instructions.remove(node.getNext());
+
+                                methodNode.instructions.insert(node, shouldRenderHand());
+
+                                methodNode.instructions.remove(node.getPrevious().getPrevious().getPrevious());
+                                methodNode.instructions.remove(node.getPrevious().getPrevious());
+                                methodNode.instructions.remove(node.getPrevious());
+                                methodNode.instructions.remove(node);
+                                break;
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -297,6 +319,14 @@ public class EntityRendererTransformer implements ITransformer {
         list.add(CommonInstructions.getTransitionHelper());
         list.add(CommonInstructions.isTransitionActive());
         list.add(new JumpInsnNode(Opcodes.IFEQ, elseLabel));
+        return list;
+    }
+
+    private InsnList shouldRenderHand() {
+        InsnList list = new InsnList();
+        list.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        list.add(CommonInstructions.getTransitionHelper());
+        list.add(CommonInstructions.shouldRenderFirstPersonHand());
         return list;
     }
 }

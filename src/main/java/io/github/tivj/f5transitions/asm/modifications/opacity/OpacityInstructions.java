@@ -20,14 +20,14 @@ public class OpacityInstructions {
         }
 
         if (setColor) {
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
-            list.add(new InsnNode(scala.tools.asm.Opcodes.FCONST_1));
+            list.add(new InsnNode(Opcodes.FCONST_1));
+            list.add(new InsnNode(Opcodes.FCONST_1));
+            list.add(new InsnNode(Opcodes.FCONST_1));
             list.add(CommonInstructions.getMinecraftInstance());
             list.add(CommonInstructions.getEntityRendererFromMCInstance());
             list.add(CommonInstructions.getTransitionHelper());
             list.add(CommonInstructions.getArmorOpacity());
-            list.add(new MethodInsnNode(scala.tools.asm.Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "color", "(FFFF)V", false));
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "color", "(FFFF)V", false));
         }
 
         LabelNode afterDepthMaskDisabled = new LabelNode();

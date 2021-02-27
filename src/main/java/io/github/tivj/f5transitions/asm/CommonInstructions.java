@@ -53,6 +53,10 @@ public class CommonInstructions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "isTransitionActive", "()Z", false);
     }
 
+    public static AbstractInsnNode shouldRenderFirstPersonHand() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldRenderFirstPersonHand", "()Z", false);
+    }
+
     public static InsnList isEntityRenderEntity(int indexOfEntityVariable) {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, indexOfEntityVariable));

@@ -16,8 +16,10 @@ public class DebuggingGateway {
         if (transition != null) {
             lines.add("Transition ongoing: " + transition.transitionActive);
             lines.add("Camera distance: " + transition.getCameraDistance(0F));
+            lines.add("Player opacity: " + transition.getPlayerOpacity());
             lines.add("Y rotation: " + transition.getYRotationBonus(0F));
             lines.add("from -> to perspective: " + (transition.from == null ? "null" : transition.from.getID()) + " -> " + transition.to.getID());
+            lines.add("from -> to perspective Y: " + (transition.from == null ? "null" : transition.from.getCameraYRotation()) + " -> " + transition.to.getCameraYRotation());
             lines.add("Direction: "+(direction == null ? "null" : direction.toString()));
         }
         lines.add("Perspective: " + Minecraft.getMinecraft().gameSettings.thirdPersonView);

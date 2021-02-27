@@ -87,3 +87,15 @@
         }
 ```
 ...
+```java
+    boolean flag = this.mc.getRenderViewEntity() instanceof EntityLivingBase && ((EntityLivingBase)this.mc.getRenderViewEntity()).isPlayerSleeping();
+
+-   if (this.mc.gameSettings.thirdPersonView == 0 && !flag && !this.mc.gameSettings.hideGUI && !this.mc.playerController.isSpectator())
++   if (this.perspectiveTransitionHelper.shouldRenderFirstPersonHand() && !flag && !this.mc.gameSettings.hideGUI && !this.mc.playerController.isSpectator())
+    {
+        this.enableLightmap();
+        this.itemRenderer.renderItemInFirstPerson(partialTicks);
+        this.disableLightmap();
+    }
+```
+...

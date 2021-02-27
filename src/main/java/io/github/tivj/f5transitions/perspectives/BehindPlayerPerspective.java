@@ -1,12 +1,8 @@
 package io.github.tivj.f5transitions.perspectives;
 
-import io.github.tivj.f5transitions.TransitionPhase;
-
-import static io.github.tivj.f5transitions.config.EaseProperty.OPACITY;
-
 public class BehindPlayerPerspective implements Perspective {
     @Override
-    public float getCameraYRotation(TransitionPhase transitionPhase) {
+    public float getCameraYRotation() {
         return 0F;
     }
 
@@ -15,12 +11,9 @@ public class BehindPlayerPerspective implements Perspective {
         return maxDistance;
     }
 
-    /**
-     * Used to calculate the player's opacity only during transition to this perspective.
-     */
     @Override
-    public float getPlayerOpacity(float progress) {
-        return OPACITY.getValue(progress);
+    public float getPlayerOpacity() {
+        return 1F;
     }
 
     @Override
