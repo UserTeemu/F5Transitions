@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.asm.modifications.*;
+import io.github.tivj.f5transitions.asm.modifications.compatibility.PerspectiveModTransformer;
 import io.github.tivj.f5transitions.asm.modifications.opacity.*;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -38,8 +39,11 @@ public class ClassTransformer implements IClassTransformer {
         registerTransformer(new BlockAABBProviderTransformer.BlockStairsTransformer());
         registerTransformer(new BlockAABBProviderTransformer.PlaceholderMethodReplacerTransformer());
 
-        //debug transformer
+        // debug transformer
         registerTransformer(new GuiOverlayDebugTransformerForDebug());
+
+        // DJTheRedstoner's PerspectiveModv4 compatibility
+        registerTransformer(new PerspectiveModTransformer());
     }
 
     private void registerTransformer(ITransformer transformer) {

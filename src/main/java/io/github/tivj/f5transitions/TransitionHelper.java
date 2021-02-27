@@ -41,7 +41,7 @@ public class TransitionHelper {
         DebuggingGateway.transition = this;
     }
 
-    private static Perspective getPerspectiveFromID(int id) {
+    public static Perspective getPerspectiveFromID(int id) {
         if (id > 2 || id < 0) id = 0;
         for (Perspective perspective : perspectives) {
             if (perspective.getID() == id) return perspective;

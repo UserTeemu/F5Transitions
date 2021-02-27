@@ -5,6 +5,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class CommonInstructions {
+    public static AbstractInsnNode getPerspectiveFromID() {
+        return new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/tivj/f5transitions/TransitionHelper", "getPerspectiveFromID", "(I)Lio/github/tivj/f5transitions/perspectives/Perspective;", false);
+    }
+
     public static AbstractInsnNode updatePerspectiveTransitions() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "updatePerspectiveTimer", "()V", false);
     }
@@ -27,6 +31,10 @@ public class CommonInstructions {
 
     public static AbstractInsnNode beforePerspectiveChanges() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "beforePerspectiveChanged", "()V", false);
+    }
+
+    public static AbstractInsnNode changePerspective() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "changePerspective", "(Lio/github/tivj/f5transitions/perspectives/Perspective;Z)V", false);
     }
 
     public static AbstractInsnNode getPlayerOpacity() {
