@@ -4,7 +4,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.asm.modifications.*;
-import io.github.tivj.f5transitions.asm.modifications.compatibility.PerspectiveModTransformer;
+import io.github.tivj.f5transitions.asm.modifications.compatibility.perspectivemod.PerspectiveModTransformer;
+import io.github.tivj.f5transitions.asm.modifications.compatibility.perspectivemod.RotationTransititionTransformer;
 import io.github.tivj.f5transitions.asm.modifications.opacity.*;
 import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
@@ -44,6 +45,7 @@ public class ClassTransformer implements IClassTransformer {
 
         // DJTheRedstoner's PerspectiveModv4 compatibility
         registerTransformer(new PerspectiveModTransformer());
+        registerTransformer(new RotationTransititionTransformer());
     }
 
     private void registerTransformer(ITransformer transformer) {

@@ -5,6 +5,10 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 public class CommonInstructions {
+    public static AbstractInsnNode getPerspectiveModTransitionHelper() {
+        return new FieldInsnNode(Opcodes.GETFIELD, "io/github/tivj/f5transitions/TransitionHelper", "perspectiveModTransitionHelper", "Lio/github/tivj/f5transitions/compatibility/PerspectiveModTransitionHelper;");
+    }
+
     public static AbstractInsnNode getPerspectiveFromID() {
         return new MethodInsnNode(Opcodes.INVOKESTATIC, "io/github/tivj/f5transitions/TransitionHelper", "getPerspectiveFromID", "(I)Lio/github/tivj/f5transitions/perspectives/Perspective;", false);
     }
@@ -29,12 +33,12 @@ public class CommonInstructions {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldRenderArrowLayer", "()Z", false);
     }
 
-    public static AbstractInsnNode beforePerspectiveChanges() {
-        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "beforePerspectiveChanged", "()V", false);
-    }
-
     public static AbstractInsnNode changePerspective() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "changePerspective", "(Lio/github/tivj/f5transitions/perspectives/Perspective;Z)V", false);
+    }
+
+    public static AbstractInsnNode setTransitionFinishCallback() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "setTransitionFinishCallback", "(Ljava/lang/Runnable;)V", false);
     }
 
     public static AbstractInsnNode getPlayerOpacity() {
@@ -55,6 +59,10 @@ public class CommonInstructions {
 
     public static AbstractInsnNode shouldRenderFirstPersonHand() {
         return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/TransitionHelper", "shouldRenderFirstPersonHand", "()Z", false);
+    }
+
+    public static AbstractInsnNode getMultipliedFacingValueForPerspectiveMod() {
+        return new MethodInsnNode(Opcodes.INVOKEVIRTUAL, "io/github/tivj/f5transitions/compatibility/PerspectiveModTransitionHelper", "getMultipliedFacingValueForPerspectiveMod", "(FLnet/minecraft/entity/Entity;ZZ)F", false);
     }
 
     public static InsnList isEntityRenderEntity(int indexOfEntityVariable) {

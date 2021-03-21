@@ -11,7 +11,7 @@ object TransitionsConfig : Vigilant(File("./config/f5transitions.toml")) {
         type = PropertyType.DECIMAL_SLIDER,
         name = "Animation length",
         description = "in client ticks",
-        maxF = 1000F,
+        maxF = 100F,
         decimalPlaces = 3,
         category = "Animation",
         subcategory = "Animation"
@@ -68,6 +68,7 @@ object TransitionsConfig : Vigilant(File("./config/f5transitions.toml")) {
                     it.asVigilanceSelector(this)
                 }
             }
+            PerspectiveModCompatibilityOptions.addOptions(this)
         }
 
         category("Collisions") {

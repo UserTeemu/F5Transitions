@@ -3,7 +3,6 @@ package io.github.tivj.f5transitions;
 import io.github.tivj.f5transitions.command.F5TransitionsCommand;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.modcore.api.ModCoreAPI;
@@ -21,15 +20,12 @@ public class TransitionsMod {
     @Mod.Instance(MODID)
     public static TransitionsMod INSTANCE;
 
-    public static boolean patcherLoadedInClasspath;
-
     public TransitionsMod() {
         MinecraftForge.EVENT_BUS.register(this);
     }
 
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
-        patcherLoadedInClasspath = Loader.isModLoaded("patcher");
         TransitionsConfig.INSTANCE.preload();
         ModCoreAPI.getCommandRegistry().registerCommand(new F5TransitionsCommand());
     }

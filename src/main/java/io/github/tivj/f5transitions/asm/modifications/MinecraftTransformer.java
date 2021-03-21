@@ -25,7 +25,7 @@ public class MinecraftTransformer implements ITransformer {
                         String ownerName = mapFieldNameFromNode(node.getPrevious().getPrevious());
                         String fieldName = mapFieldNameFromNode(node);
                         if ((ownerName.equals("gameSettings") || ownerName.equals("field_71474_y")) && (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O"))) {
-                            methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious(), beforePerspectiveChanged());
+                            methodNode.instructions.insert(node, changePerspective());
                             break;
                         }
                     }
@@ -34,14 +34,14 @@ public class MinecraftTransformer implements ITransformer {
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
-                    if (node.getOpcode() == Opcodes.PUTFIELD && node.getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.GETFIELD) {
-                        String fieldName = mapFieldNameFromNode(node);
-                        if ((fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) && isSameFieldReference(node, node.getPrevious().getPrevious().getPrevious())) {
-                            AbstractInsnNode ownerNode = node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious(); // just so I don't need to call this again
-                            if (ownerNode.getOpcode() == Opcodes.GETFIELD) {
-                                String ownerName = mapFieldNameFromNode(node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious());
-                                if (ownerName.equals("gameSettings") || ownerName.equals("field_71474_y")) {
-                                    methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious(), beforePerspectiveChanged());
+                    if (node.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                        String invokeName = mapMethodNameFromNode(node);
+                        if (invokeName.equals("setDisplayListEntitiesDirty") || invokeName.equals("func_174979_m")) {
+                            AbstractInsnNode earlierNode = node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getPrevious();
+                            if (earlierNode.getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                                String earlierInvokeName = mapMethodNameFromNode(earlierNode);
+                                if (earlierInvokeName.equals("loadEntityShader") || earlierInvokeName.equals("func_175066_a")) {
+                                    methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious(), changePerspective());
                                     break;
                                 }
                             }
@@ -52,12 +52,19 @@ public class MinecraftTransformer implements ITransformer {
         }
     }
 
-    private InsnList beforePerspectiveChanged() {
+    private InsnList changePerspective() {
         InsnList list = new InsnList();
         list.add(new VarInsnNode(Opcodes.ALOAD, 0));
         list.add(CommonInstructions.getEntityRendererFromMCInstance());
         list.add(CommonInstructions.getTransitionHelper());
-        list.add(CommonInstructions.beforePerspectiveChanges());
+
+        list.add(new VarInsnNode(Opcodes.ALOAD, 0));
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/Minecraft", "field_71474_y", "Lnet/minecraft/client/settings/GameSettings;")); // gameSettings
+        list.add(new FieldInsnNode(Opcodes.GETFIELD, "net/minecraft/client/settings/GameSettings", "field_74320_O", "I")); // thirdPersonView
+        list.add(CommonInstructions.getPerspectiveFromID());
+
+        list.add(new InsnNode(Opcodes.ICONST_1));
+        list.add(CommonInstructions.changePerspective());
         return list;
     }
 }
