@@ -14,10 +14,8 @@
             this.setModelPartVisible(t, armorSlot);
             boolean flag = this.isSlotForLeggings(armorSlot);
             this.renderer.bindTexture(this.getArmorResource(entitylivingbaseIn, itemstack, flag ? 2 : 1, null));
-
-+           boolean isEntityRenderEntity = entitylivingbaseIn.equals(Minecraft.getMinecraft().getRenderViewEntity());
-+
-+           if (isEntityRenderEntity) {
+            
++           if (isEntityRenderEntity = GeneralEntityRenderingHook.canApplyTransitionsToEntity(entitylivingbaseIn)) {
 +               GlStateManager.pushMatrix();
 +               if (Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.shouldDisableDepthMask()) GlStateManager.depthMask(false);
 +               GlStateManager.enableBlend();

@@ -12,14 +12,14 @@ protected void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036
             return;
         }
 
-+       boolean isEntityRenderEntity = entitylivingbaseIn.equals(Minecraft.getMinecraft().getRenderViewEntity());
++       boolean isEntityRenderEntity = GeneralEntityRenderingHook.canApplyTransitionsToEntity(entitylivingbaseIn);
 -       if (flag1)
--       if (flag1 || isEntityRenderEntity)
++       if (flag1 || isEntityRenderEntity)
         {
             GlStateManager.pushMatrix();
 -           GlStateManager.color(1.0F, 1.0F, 1.0F, 0.15F);
 +           GlStateManager.color(1.0F, 1.0F, 1.0F, isEntityRenderEntity ? Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.getPlayerOpacity() : 0.15F);
-+           if (!isEntityRenderEntity || Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.isPlayerNotRenderedSolid()){
++           if (!isEntityRenderEntity || Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.isPlayerNotRenderedSolid()) {
                 GlStateManager.depthMask(false);
 +           }
             GlStateManager.enableBlend();
@@ -30,7 +30,7 @@ protected void renderModel(T entitylivingbaseIn, float p_77036_2_, float p_77036
         this.mainModel.render(entitylivingbaseIn, p_77036_2_, p_77036_3_, p_77036_4_, p_77036_5_, p_77036_6_, scaleFactor);
 
 -       if (flag1)
--       if (flag1 || isEntityRenderEntity)
++       if (flag1 || isEntityRenderEntity)
         {
             GlStateManager.disableBlend();
             GlStateManager.alphaFunc(516, 0.1F);

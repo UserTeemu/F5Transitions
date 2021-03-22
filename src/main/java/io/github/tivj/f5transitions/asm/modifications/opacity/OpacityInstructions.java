@@ -4,11 +4,13 @@ import io.github.tivj.f5transitions.asm.CommonInstructions;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
+import static io.github.tivj.f5transitions.asm.hooks.GeneralEntityRenderingHook.canApplyTransitionsToEntity;
+
 public class OpacityInstructions {
     public static InsnList beforeRender(LocalVariableNode isEntityRenderEntity, boolean pushMatrix, boolean setColor) {
         InsnList list = new InsnList();
         list.add(isEntityRenderEntity.start);
-        list.add(CommonInstructions.isEntityRenderEntity(1));
+        list.add(canApplyTransitionsToEntity(1));
         list.add(new InsnNode(Opcodes.DUP));
         list.add(new VarInsnNode(Opcodes.ISTORE, isEntityRenderEntity.index));
 

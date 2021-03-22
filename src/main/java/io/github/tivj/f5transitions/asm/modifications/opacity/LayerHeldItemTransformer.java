@@ -7,6 +7,8 @@ import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
+import static io.github.tivj.f5transitions.asm.hooks.GeneralEntityRenderingHook.canApplyTransitionsToEntity;
+
 public class LayerHeldItemTransformer implements ITransformer {
     @Override
     public String[] getClassName() {
@@ -40,7 +42,7 @@ public class LayerHeldItemTransformer implements ITransformer {
 
     private InsnList addBytecode(LabelNode canContinueLabel, LabelNode returnLabel) {
         InsnList list = new InsnList();
-        list.add(CommonInstructions.isEntityRenderEntity(1));
+        list.add(canApplyTransitionsToEntity(1));
         list.add(new JumpInsnNode(Opcodes.IFEQ, canContinueLabel));
 
         list.add(CommonInstructions.getMinecraftInstance());

@@ -52,6 +52,7 @@ dependencies {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
+        exclude module: 'WaifUPnP'
     }
 }
 

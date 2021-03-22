@@ -8,6 +8,7 @@ import org.objectweb.asm.tree.*;
 import java.util.ListIterator;
 
 import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
+import static io.github.tivj.f5transitions.asm.hooks.GeneralEntityRenderingHook.canApplyTransitionsToEntity;
 
 public class RendererLivingEntityTransformer implements ITransformer {
     @Override
@@ -32,7 +33,7 @@ public class RendererLivingEntityTransformer implements ITransformer {
                         String invokeName = mapMethodNameFromNode(node.getNext().getNext().getNext());
                         if (invokeName.equals("pushMatrix") || invokeName.equals("func_179094_E")) {
                             methodNode.instructions.insertBefore(node.getPrevious(), isEntityRenderEntity.start);
-                            methodNode.instructions.insertBefore(node.getPrevious(), isEntityRenderEntity(1));
+                            methodNode.instructions.insertBefore(node.getPrevious(), canApplyTransitionsToEntity(1));
                             methodNode.instructions.insertBefore(node.getPrevious(), new VarInsnNode(Opcodes.ISTORE, isEntityRenderEntity.index));
 
                             LabelNode beginningLabel = (LabelNode) node.getNext();

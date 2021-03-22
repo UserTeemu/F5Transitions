@@ -5,7 +5,7 @@ public void doRenderLayer(AbstractClientPlayer entitylivingbaseIn, float p_17714
     if (entitylivingbaseIn.getName().equals("deadmau5") && entitylivingbaseIn.hasSkin() && !entitylivingbaseIn.isInvisible())
     {
 +       boolean isEntityRenderEntity;
-+       if (isEntityRenderEntity = entitylivingbaseIn.equals(Minecraft.getMinecraft().getRenderViewEntity())) {
++       if (isEntityRenderEntity = GeneralEntityRenderingHook.canApplyTransitionsToEntity(entitylivingbaseIn)) {
 +           GlStateManager.pushMatrix();
 +           GlStateManager.color(1.0F, 1.0F, 1.0F, Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.getArmorOpacity());
 +           if (Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.shouldDisableDepthMask()) {

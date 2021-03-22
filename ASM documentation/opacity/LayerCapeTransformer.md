@@ -5,11 +5,8 @@ public void doRenderLayer(AbstractClientPlayer entitylivingbaseIn, float p_17714
     if (entitylivingbaseIn.hasPlayerInfo() && !entitylivingbaseIn.isInvisible() && entitylivingbaseIn.isWearing(EnumPlayerModelParts.CAPE) && entitylivingbaseIn.getLocationCape() != null)
     {
 +       boolean isEntityRenderEntity;
-+       if (isEntityRenderEntity = entitylivingbaseIn.equals(Minecraft.getMinecraft().getRenderViewEntity())) {
-+           if (Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.shouldDisableDepthMask()) {
-+               GlStateManager.depthMask(false);
-+           }
-+
++       if (isEntityRenderEntity = GeneralEntityRenderingHook.canApplyTransitionsToEntity(entitylivingbaseIn)) {
++           if (Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.isPlayerDepthMaskFalse()) GlStateManager.depthMask(false);
 +           GlStateManager.enableBlend();
 +           GlStateManager.alphaFunc(516, 0.003921569F);
 +       }

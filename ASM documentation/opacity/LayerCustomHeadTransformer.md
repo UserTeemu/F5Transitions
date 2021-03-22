@@ -10,9 +10,8 @@ public void doRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177141_2_
         Minecraft minecraft = Minecraft.getMinecraft();
         GlStateManager.pushMatrix();
 
-+       boolean isEntityRenderEntity = entitylivingbaseIn.equals(Minecraft.getMinecraft().getRenderViewEntity());
-+
-+       if (isEntityRenderEntity) {
++       boolean isEntityRenderEntity;
++       if (isEntityRenderEntity = GeneralEntityRenderingHook.canApplyTransitionsToEntity(entitylivingbaseIn)) {
 +           if (Minecraft.getMinecraft().entityRenderer.perspectiveTransitionHelper.isPlayerDepthMaskFalse()) GlStateManager.depthMask(false);
 +           GlStateManager.enableBlend();
 +           GlStateManager.alphaFunc(516, 0.003921569F);

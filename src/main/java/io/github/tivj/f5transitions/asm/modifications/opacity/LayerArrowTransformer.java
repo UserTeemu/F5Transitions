@@ -7,6 +7,7 @@ import scala.tools.asm.Opcodes;
 import java.util.ListIterator;
 
 import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
+import static io.github.tivj.f5transitions.asm.hooks.GeneralEntityRenderingHook.canApplyTransitionsToEntity;
 
 public class LayerArrowTransformer implements ITransformer {
     @Override
@@ -35,7 +36,7 @@ public class LayerArrowTransformer implements ITransformer {
 
     private InsnList ifThereAreArrows(LabelNode returnLabel) {
         InsnList list = new InsnList();
-        list.add(isEntityRenderEntity(1));
+        list.add(canApplyTransitionsToEntity(1));
         list.add(new JumpInsnNode(Opcodes.IFEQ, returnLabel));
 
         list.add(getMinecraftInstance());
