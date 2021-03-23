@@ -1,5 +1,6 @@
 package io.github.tivj.f5transitions.asm.tweaker;
 
+import io.github.tivj.f5transitions.asm.ClassTransformer;
 import net.minecraftforge.common.ForgeVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin;
 

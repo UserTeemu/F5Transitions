@@ -18,7 +18,7 @@ public class OpacityInstructions {
         list.add(new JumpInsnNode(Opcodes.IFEQ, end));
 
         if (pushMatrix) {
-            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "pushMatrix", "()V", false));
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179094_E", "()V", false)); // pushMatrix
         }
 
         if (setColor) {
@@ -29,7 +29,7 @@ public class OpacityInstructions {
             list.add(CommonInstructions.getEntityRendererFromMCInstance());
             list.add(CommonInstructions.getTransitionHelper());
             list.add(CommonInstructions.getArmorOpacity());
-            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "color", "(FFFF)V", false));
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179131_c", "(FFFF)V", false)); // color
         }
 
         LabelNode afterDepthMaskDisabled = new LabelNode();
@@ -39,14 +39,14 @@ public class OpacityInstructions {
         list.add(CommonInstructions.shouldDisableDepthMask());
         list.add(new JumpInsnNode(Opcodes.IFEQ, afterDepthMaskDisabled));
         list.add(new InsnNode(Opcodes.ICONST_0));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "depthMask", "(Z)V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179132_a", "(Z)V", false)); // depthMask
         list.add(afterDepthMaskDisabled);
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "enableBlend", "()V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179147_l", "()V", false)); // enableBlend
 
         list.add(new IntInsnNode(Opcodes.SIPUSH, 516));
         list.add(new LdcInsnNode(0.003921569F));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "alphaFunc", "(IF)V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179092_a", "(IF)V", false)); // alphaFunc
 
         list.add(end);
         return list;
@@ -59,15 +59,15 @@ public class OpacityInstructions {
 
         list.add(new IntInsnNode(Opcodes.SIPUSH, 516));
         list.add(new LdcInsnNode(0.1F));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "alphaFunc", "(IF)V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179092_a", "(IF)V", false)); // alphaFunc
 
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "disableBlend", "()V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179084_k", "()V", false)); // disableBlend
 
         list.add(new InsnNode(Opcodes.ICONST_1));
-        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "depthMask", "(Z)V", false));
+        list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179132_a", "(Z)V", false)); // depthMask
 
         if (popMatrix) {
-            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "popMatrix", "()V", false));
+            list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "net/minecraft/client/renderer/GlStateManager", "func_179121_F", "()V", false)); // popMatrix
         }
 
         list.add(isEntityRenderEntity.end);

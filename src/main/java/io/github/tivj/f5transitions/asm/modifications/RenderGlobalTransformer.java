@@ -2,14 +2,14 @@ package io.github.tivj.f5transitions.asm.modifications;
 
 import io.github.tivj.f5transitions.asm.CommonInstructions;
 import io.github.tivj.f5transitions.asm.hooks.GeneralEntityRenderingHook;
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
-import io.github.tivj.f5transitions.utils.BytecodeHelper;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
 import java.util.ListIterator;
 
-import static io.github.tivj.f5transitions.asm.CommonInstructions.*;
+import static io.github.tivj.f5transitions.asm.CommonInstructions.getTransitionHelper;
+import static io.github.tivj.f5transitions.asm.CommonInstructions.isTransitionActive;
 
 public class RenderGlobalTransformer implements ITransformer {
     @Override
@@ -22,10 +22,9 @@ public class RenderGlobalTransformer implements ITransformer {
         for (MethodNode methodNode : classNode.methods) {
             String methodName = mapMethodName(classNode, methodNode);
             if (methodName.equals("renderEntities") || methodName.equals("func_180446_a")) {
-                methodNode.instructions.insert(GeneralEntityRenderingHook.setContext(true));
                 for (AbstractInsnNode node = methodNode.instructions.getFirst(); node.getNext() != null && node.getNext().getNext() != null; node = node.getNext()) {
-                    if (node.getOpcode() == Opcodes.LDC && ((LdcInsnNode)node).cst.equals("prepare") && node.getNext().getNext().getOpcode() == Opcodes.INVOKEVIRTUAL) {
-                        methodNode.instructions.insert(node.getNext(), GeneralEntityRenderingHook.setContext(false));
+                    if (node.getOpcode() == Opcodes.LDC && ((LdcInsnNode)node).cst.equals("prepare") && node.getNext().getOpcode() == Opcodes.INVOKEVIRTUAL) {
+                        methodNode.instructions.insert(node.getNext(), GeneralEntityRenderingHook.setContext(true));
                         break;
                     }
                 }

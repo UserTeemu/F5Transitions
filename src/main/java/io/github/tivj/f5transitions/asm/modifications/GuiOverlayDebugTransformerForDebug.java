@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 

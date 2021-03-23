@@ -1,16 +1,8 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
-import net.minecraft.block.Block;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.BlockPos;
-import net.minecraft.world.World;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
-
-import java.util.ListIterator;
-import java.util.Set;
 
 public class BlockAABBProviderTransformer {
     private static final String addAABBstoSetMethodName = "addAllBoundingBoxesToSetForCameraRayTracing";

@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications.opacity;
 
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.tree.*;
 import scala.tools.asm.Opcodes;
 
@@ -27,7 +27,7 @@ public class LayerCapeTransformer implements ITransformer {
                     AbstractInsnNode node = iterator.next();
                     if (node.getOpcode() == Opcodes.FCONST_1 && node.getNext().getOpcode() == Opcodes.INVOKESTATIC) {
                         String invokeName = mapMethodNameFromNode(node.getNext());
-                        if (invokeName.equals("color") || invokeName.equals("func_179124_c")) {
+                        if (invokeName.equals("color") || invokeName.equals("func_179131_c")) {
                             // before render
                             methodNode.instructions.insertBefore(node.getPrevious().getPrevious().getPrevious(), beforeRender(isEntityRenderEntity, false, false));
 
@@ -35,6 +35,7 @@ public class LayerCapeTransformer implements ITransformer {
                             LabelNode end = new LabelNode();
                             methodNode.instructions.insertBefore(node, getAlpha(isEntityRenderEntity, end));
                             methodNode.instructions.insert(node, end);
+                            break;
                         }
                     }
                 }

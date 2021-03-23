@@ -1,7 +1,7 @@
 package io.github.tivj.f5transitions.asm.modifications.compatibility.perspectivemod;
 
 import io.github.tivj.f5transitions.asm.CommonInstructions;
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Handle;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;

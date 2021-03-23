@@ -2,7 +2,6 @@ package io.github.tivj.f5transitions.utils;
 
 import io.github.tivj.f5transitions.asm.BlockPlaceholder;
 import io.github.tivj.f5transitions.config.CameraCollisionException;
-import io.github.tivj.f5transitions.config.TransitionsConfig;
 import net.minecraft.block.*;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.*;

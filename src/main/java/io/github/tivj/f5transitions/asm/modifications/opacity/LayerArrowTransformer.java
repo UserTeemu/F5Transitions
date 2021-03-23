@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.asm.modifications.opacity;
 
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.tree.*;
 import scala.tools.asm.Opcodes;
 
@@ -26,8 +26,16 @@ public class LayerArrowTransformer implements ITransformer {
                 ListIterator<AbstractInsnNode> iterator = methodNode.instructions.iterator();
                 while (iterator.hasNext()) {
                     AbstractInsnNode node = iterator.next();
-                    if (node.getOpcode() == Opcodes.IFLE && node.getPrevious().getOpcode() == Opcodes.ILOAD) {
-                        methodNode.instructions.insert(node, ifThereAreArrows(((JumpInsnNode) node).label));
+
+                    if (node.getNext() instanceof LabelNode) {
+                        LabelNode label = null;
+                        if (node.getOpcode() == Opcodes.IFLE) label = ((JumpInsnNode) node).label;
+                        else if (node.getOpcode() == Opcodes.IFGE) label = (LabelNode) node.getNext();
+
+                        if (label != null && node.getPrevious().getOpcode() == Opcodes.ILOAD) {
+                            methodNode.instructions.insert(node, ifThereAreArrows(label));
+                            return;
+                        }
                     }
                 }
             }

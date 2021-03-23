@@ -1,7 +1,7 @@
 package io.github.tivj.f5transitions.asm.modifications.opacity;
 
 import io.github.tivj.f5transitions.asm.CommonInstructions;
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
@@ -46,7 +46,6 @@ public class RendererLivingEntityTransformer implements ITransformer {
                         methodNode.instructions.insert(node, afterNormalValue);
                         methodNode.instructions.insertBefore(node, getReplacementAlpha(afterNormalValue, isEntityRenderEntity));
                         phase++;
-
                     } else if (phase == 2 && node.getOpcode() == Opcodes.INVOKESTATIC && node.getPrevious().getOpcode() == Opcodes.ICONST_0 && node.getNext() instanceof LabelNode) {// disable depth mask if needed
                         String invokeName = mapMethodNameFromNode(node);
                         if (invokeName.equals("depthMask") || invokeName.equals("func_179132_a")) {

@@ -1,14 +1,13 @@
-package io.github.tivj.f5transitions.asm.tweaker;
+package io.github.tivj.f5transitions.asm;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import io.github.tivj.f5transitions.TransitionsMod;
 import io.github.tivj.f5transitions.asm.modifications.*;
 import io.github.tivj.f5transitions.asm.modifications.compatibility.perspectivemod.PerspectiveModTransformer;
 import io.github.tivj.f5transitions.asm.modifications.compatibility.perspectivemod.RotationTransititionTransformer;
 import io.github.tivj.f5transitions.asm.modifications.opacity.*;
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
 import net.minecraft.launchwrapper.IClassTransformer;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -18,7 +17,7 @@ import java.util.Collection;
 
 public class ClassTransformer implements IClassTransformer {
     private final Multimap<String, ITransformer> transformerMap = ArrayListMultimap.create();
-    private static final Logger logger = TransitionsMod.LOGGER;
+    public static final Logger LOGGER = LogManager.getLogger("F5 Transitions Transformers");
 
     public ClassTransformer() {
         registerTransformer(new EntityRendererTransformer());
@@ -61,14 +60,14 @@ public class ClassTransformer implements IClassTransformer {
         Collection<ITransformer> transformers = transformerMap.get(transformedName);
         if (transformers.isEmpty()) return bytes;
 
-        logger.info("Found {} transformers for {}", transformers.size(), transformedName);
+        LOGGER.info("Found {} transformers for {}", transformers.size(), transformedName);
 
         ClassReader reader = new ClassReader(bytes);
         ClassNode node = new ClassNode();
         reader.accept(node, ClassReader.EXPAND_FRAMES);
 
         for (ITransformer transformer : transformers) {
-            logger.info("Applying transformer {} on {}...", transformer.getClass().getName(), transformedName);
+            LOGGER.info("Applying transformer {} on {}...", transformer.getClass().getName(), transformedName);
             transformer.transform(node, transformedName);
         }
 
@@ -77,7 +76,7 @@ public class ClassTransformer implements IClassTransformer {
         try {
             node.accept(writer);
         } catch (Throwable t) {
-            logger.error("Exception when transforming " + transformedName + ": " + t.getClass().getSimpleName());
+            LOGGER.error("Exception when transforming " + transformedName + ": " + t.getClass().getSimpleName());
             t.printStackTrace();
         }
 

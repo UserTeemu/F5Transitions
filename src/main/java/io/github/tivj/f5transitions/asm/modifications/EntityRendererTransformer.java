@@ -1,12 +1,10 @@
 package io.github.tivj.f5transitions.asm.modifications;
 
 import io.github.tivj.f5transitions.asm.CommonInstructions;
-import io.github.tivj.f5transitions.asm.tweaker.transformer.ITransformer;
+import io.github.tivj.f5transitions.asm.ITransformer;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ListIterator;
 
 public class EntityRendererTransformer implements ITransformer {
@@ -15,13 +13,6 @@ public class EntityRendererTransformer implements ITransformer {
     @Override
     public String[] getClassName() {
         return new String[]{"net.minecraft.client.renderer.EntityRenderer"};
-    }
-
-    @Override
-    public List<String> debuggableClass() {
-        List<String> list = new ArrayList<>();
-        list.add("orientCamera");
-        return list;
     }
 
     @Override
@@ -233,17 +224,21 @@ public class EntityRendererTransformer implements ITransformer {
                     if (node.getOpcode() == Opcodes.GETFIELD && node.getNext().getOpcode() == Opcodes.IFNE) {
                         String fieldName = mapFieldNameFromNode(node);
                         if (fieldName.equals("thirdPersonView") || fieldName.equals("field_74320_O")) {
-                            if (node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getOpcode() == Opcodes.ISTORE && ((VarInsnNode)node.getPrevious().getPrevious().getPrevious().getPrevious().getPrevious().getPrevious()).var == 4) {
-                                methodNode.instructions.insert(node.getNext(), new JumpInsnNode(Opcodes.IFEQ, ((JumpInsnNode)node.getNext()).label));
-                                methodNode.instructions.remove(node.getNext());
+                            AbstractInsnNode laterNode = node.getNext().getNext().getNext().getNext().getNext().getNext().getNext();
+                            if (laterNode.getOpcode() == Opcodes.GETFIELD) {
+                                String laterNodeName = mapFieldNameFromNode(laterNode);
+                                if (laterNodeName.equals("hideGUI") || laterNodeName.equals("field_74319_N")) {
+                                    methodNode.instructions.insert(node.getNext(), new JumpInsnNode(Opcodes.IFEQ, ((JumpInsnNode) node.getNext()).label));
+                                    methodNode.instructions.remove(node.getNext());
 
-                                methodNode.instructions.insert(node, shouldRenderHand());
+                                    methodNode.instructions.insert(node, shouldRenderHand());
 
-                                methodNode.instructions.remove(node.getPrevious().getPrevious().getPrevious());
-                                methodNode.instructions.remove(node.getPrevious().getPrevious());
-                                methodNode.instructions.remove(node.getPrevious());
-                                methodNode.instructions.remove(node);
-                                break;
+                                    methodNode.instructions.remove(node.getPrevious().getPrevious().getPrevious());
+                                    methodNode.instructions.remove(node.getPrevious().getPrevious());
+                                    methodNode.instructions.remove(node.getPrevious());
+                                    methodNode.instructions.remove(node);
+                                    break;
+                                }
                             }
                         }
                     }
