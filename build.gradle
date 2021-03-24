@@ -1,6 +1,4 @@
 buildscript {
-    ext.kotlin_version = "1.3.72"
-
     repositories {
         jcenter()
         maven { url "https://jitpack.io" }
@@ -11,9 +9,9 @@ buildscript {
     }
 
     dependencies {
-        classpath "net.minecraftforge.gradle:ForgeGradle:2.1-SNAPSHOT"
+        classpath 'com.github.UserTeemu:ForgeGradle:aa7e4ae39a:all'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.jengelman.gradle.plugins:shadow:4.0.4"
+        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
     }
 }
 
@@ -21,9 +19,9 @@ apply plugin: "kotlin"
 apply plugin: 'net.minecraftforge.gradle.forge'
 apply plugin: 'com.github.johnrengelman.shadow'
 
-version = "0.1"
-group = "io.github.tivj.f5transitions"
-archivesBaseName = "F5 Transitions"
+version = project.version
+group = project.group
+archivesBaseName = project.archivesBaseName
 
 sourceCompatibility = targetCompatibility = 1.8
 
@@ -32,7 +30,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientRunArgs += " --tweakClass io.github.tivj.f5transitions.asm.tweaker.F5TransitionsTweaker"
+    clientRunArgs += "--tweakClass ${project.tweakClass}"
 
     replaceIn "TransitionsMod.java"
     replace "@MOD_VERSION@", project.version
@@ -45,24 +43,49 @@ repositories {
     maven { url "https://repo.sk1er.club/repository/maven-public" }
 }
 
+configurations {
+    shadow
+    implementation.extendsFrom shadow
+}
+
 dependencies {
-    provided("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
-    compile "net.modcore:Loader:2.0.0"
+    shadow "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    shadow "net.modcore:Loader:2.0.0"
     provided("net.modcore:ModCore:799-10809-SNAPSHOT") {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
         exclude module: 'WaifUPnP'
+        exclude group: 'org.jetbrains.kotlin'
+        exclude group: 'org.jetbrains.kotlinx'
     }
 }
 
 shadowJar {
-    baseName = jar.baseName
-    classifier = jar.classifier
+    archiveBaseName.set(jar.archiveBaseName)
+    archiveClassifier.set(jar.archiveClassifier)
+    configurations = [project.configurations.shadow]
+    relocate 'org.jetbrains.kotlinx', "org.jetbrains.kotlinx-v${kotlin_version.replace('.', '-')}"
+    relocate 'org.jetbrains.kotlin', "org.jetbrains.kotlin-v${kotlin_version.replace('.', '-')}"
+    relocate 'kotlin', "kotlin-v${kotlin_version.replace('.', '-')}"
 }
 
-reobf {
-    shadowJar {} // Reobfuscate the shadowed JAR
+reobfJar {
+    setJar(shadowJar.getArchiveFile())
+}
+tasks.reobfJar.dependsOn shadowJar
+jar.enabled = false
+
+jar {
+    exclude "club/sk1er/patcher/**" // excludes the dummy Patcher config file, that is used to solve a conflict
+    manifest {
+        attributes(
+                "TweakClass": project.tweakClass,
+                "TweakOrder": "0",
+                "ModSide": "CLIENT",
+                'FMLAT': project.accessTransformerFile
+        )
+    }
 }
 
 task moveResources {
@@ -93,16 +116,4 @@ processResources {
         exclude "mcmod.info"
     }
     rename '(.+_at.cfg)', 'META-INF/$1'
-}
-
-jar {
-    exclude "club/sk1er/patcher/**" // excludes the dummy Patcher config file, that is used to solve a conflict
-    manifest {
-        attributes(
-                "TweakClass": "io.github.tivj.f5transitions.asm.tweaker.F5TransitionsTweaker",
-                "TweakOrder": "0",
-                "ModSide": "CLIENT",
-                'FMLAT': 'f5transitions_at.cfg'
-        )
-    }
 }
