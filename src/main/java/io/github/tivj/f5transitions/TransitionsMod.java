@@ -1,11 +1,11 @@
 package io.github.tivj.f5transitions;
 
+import gg.essential.api.EssentialAPI;
 import io.github.tivj.f5transitions.command.F5TransitionsCommand;
 import io.github.tivj.f5transitions.config.TransitionsConfig;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.modcore.api.ModCoreAPI;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,6 +27,6 @@ public class TransitionsMod {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         TransitionsConfig.INSTANCE.preload();
-        ModCoreAPI.getCommandRegistry().registerCommand(new F5TransitionsCommand());
+        EssentialAPI.getCommandRegistry().registerCommand(new F5TransitionsCommand());
     }
 }

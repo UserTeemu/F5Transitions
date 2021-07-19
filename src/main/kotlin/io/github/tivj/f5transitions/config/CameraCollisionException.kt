@@ -1,6 +1,6 @@
 package io.github.tivj.f5transitions.config
 
-import club.sk1er.vigilance.Vigilant.CategoryPropertyBuilder
+import gg.essential.vigilance.Vigilant.CategoryPropertyBuilder
 import io.github.tivj.f5transitions.utils.readableName
 import net.minecraft.block.*
 import kotlin.reflect.KClass

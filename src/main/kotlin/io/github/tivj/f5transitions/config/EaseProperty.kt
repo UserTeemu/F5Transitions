@@ -1,7 +1,7 @@
 package io.github.tivj.f5transitions.config
 
-import club.sk1er.elementa.constraints.animation.Animations
-import club.sk1er.vigilance.Vigilant
+import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.vigilance.Vigilant
 import io.github.tivj.f5transitions.utils.readableName
 
 enum class EaseProperty(private val nameOfProperty: String) {

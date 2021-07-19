@@ -1,6 +1,7 @@
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
+        gradlePluginPortal()
         maven { url "https://jitpack.io" }
         maven {
             name = "forge"
@@ -9,9 +10,9 @@ buildscript {
     }
 
     dependencies {
-        classpath 'com.github.UserTeemu:ForgeGradle:aa7e4ae39a:all'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath "com.github.jengelman.gradle.plugins:shadow:5.2.0"
+        classpath 'com.github.asbyth:forgegradle:8708bf3e01'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath "com.github.jengelman.gradle.plugins:shadow:6.1.0"
     }
 }
 
@@ -30,10 +31,11 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientRunArgs += "--tweakClass ${project.tweakClass}"
+    clientRunArgs += "--tweakClass gg.essential.loader.stage0.EssentialSetupTweaker" // needed to run Essential in dev env
+    clientJvmArgs += "-Dfml.coreMods.load=$fmlPluginClass" // needed to use the fml plugin in dev env
 
     replaceIn "TransitionsMod.java"
-    replace "@MOD_VERSION@", project.version
+    replace "@MOD_VERSION@", version
 }
 
 repositories {
@@ -49,15 +51,12 @@ configurations {
 }
 
 dependencies {
-    shadow "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    shadow "net.modcore:Loader:2.0.0"
-    provided("net.modcore:ModCore:799-10809-SNAPSHOT") {
+    shadow "gg.essential:loader-launchwrapper:1.0.2"
+    provided("gg.essential:Essential:$essentialVersion") {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
         exclude module: 'WaifUPnP'
-        exclude group: 'org.jetbrains.kotlin'
-        exclude group: 'org.jetbrains.kotlinx'
     }
 }
 
@@ -65,9 +64,6 @@ shadowJar {
     archiveBaseName.set(jar.archiveBaseName)
     archiveClassifier.set(jar.archiveClassifier)
     configurations = [project.configurations.shadow]
-    relocate 'org.jetbrains.kotlinx', "org.jetbrains.kotlinx-v${kotlin_version.replace('.', '-')}"
-    relocate 'org.jetbrains.kotlin', "org.jetbrains.kotlin-v${kotlin_version.replace('.', '-')}"
-    relocate 'kotlin', "kotlin-v${kotlin_version.replace('.', '-')}"
 }
 
 reobfJar {
@@ -80,10 +76,11 @@ jar {
     exclude "club/sk1er/patcher/**" // excludes the dummy Patcher config file, that is used to solve a conflict
     manifest {
         attributes(
-                "TweakClass": project.tweakClass,
+                "FMLCorePlugin": fmlPluginClass,
+                "TweakClass": "gg.essential.loader.stage0.EssentialSetupTweaker",
                 "TweakOrder": "0",
                 "ModSide": "CLIENT",
-                'FMLAT': project.accessTransformerFile
+                'FMLAT': accessTransformer
         )
     }
 }

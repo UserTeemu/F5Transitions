@@ -6,10 +6,10 @@ import io.github.tivj.f5transitions.config.TransitionsConfig;
 import io.github.tivj.f5transitions.perspectives.Perspective;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.modcore.api.ModCoreAPI;
-import net.modcore.api.commands.Command;
-import net.modcore.api.commands.DefaultHandler;
-import net.modcore.api.commands.SubCommand;
+import gg.essential.api.EssentialAPI;
+import gg.essential.api.commands.Command;
+import gg.essential.api.commands.DefaultHandler;
+import gg.essential.api.commands.SubCommand;
 
 import java.lang.reflect.Field;
 
@@ -20,7 +20,7 @@ public class F5TransitionsCommand extends Command {
 
     @DefaultHandler
     public void handle() {
-        ModCoreAPI.getGuiUtil().openScreen(TransitionsConfig.INSTANCE.gui());
+        EssentialAPI.getGuiUtil().openScreen(TransitionsConfig.INSTANCE.gui());
     }
 
     @SubCommand("setperspective")
