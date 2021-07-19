@@ -36,7 +36,7 @@ This method's code is based on `BlockStairs.collisionRayTrace`.
 
 # Calling the new method
 
-Calls to the new method are done by calling a placeholder method `io.github.tivj.f5transitions.asm.BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing`.
+Calls to the new method are done by calling a placeholder method `dev.userteemu.f5transitions.asm.BlockPlaceholder.addAllBoundingBoxesToSetForCameraRayTracing`.
 The placeholder method's bytecode is injected to call the real method.
 
 You may ask why not just inject the real method call to the place where the placeholder method is called?  
